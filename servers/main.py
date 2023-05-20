@@ -1,8 +1,5 @@
-from fastapi import FastAPI,Depends
-from typing import Annotated
-from server.model.database import *
-from pymongo import MongoClient
-from server.routes.route import apps
+from fastapi import FastAPI
+from routes.route import apps
 
 
 app = FastAPI()
