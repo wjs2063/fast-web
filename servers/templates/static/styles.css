@@ -1,0 +1,61 @@
+.3_35 { 
+	overflow:hidden;
+}.e3_35 { 
+	background-color:rgba(255, 255, 255, 1);
+	width:375px;
+	height:812px;
+	position:absolute;
+}.e3_36 { 
+	background-color:rgba(46.000001057982445, 204.00000303983688, 113.00000086426735, 1);
+	width:375px;
+	height:812px;
+	position:absolute;
+	left:0px;
+	top:0px;
+}.e3_37 { 
+	width:1462.342529296875px;
+	height:1396.1551513671875px;
+	position:absolute;
+	left:-538px;
+	top:-243.99981689453125px;
+}.e3_38 { 
+	transform: rotate(-19.926097332621524deg);
+	width:1296.0069580078125px;
+	height:489.7882995605469px;
+	position:absolute;
+	left:0px;
+	top:441.68927001953125px;
+	background-image:url(images/background_food_icons_1.png);
+	background-repeat:no-repeat;
+	background-size:cover;
+}.e3_39 { 
+	transform: rotate(-19.926097332621524deg);
+	width:1296.0069580078125px;
+	height:489.7882995605469px;
+	position:absolute;
+	left:77px;
+	top:935.6890258789062px;
+	background-image:url(images/background_food_icons_2.png);
+	background-repeat:no-repeat;
+	background-size:cover;
+}.e3_40 { 
+	color:rgba(255, 255, 255, 1);
+	width:101px;
+	height:41px;
+	position:absolute;
+	left:153px;
+	top:386px;
+	font-family:Nunito Sans;
+	text-align:left;
+	font-size:30px;
+	letter-spacing:0;
+}.e3_41 { 
+	width:21px;
+	height:31px;
+	position:absolute;
+	left:121px;
+	top:391px;
+	background-image:url(images/findme_logo.png);
+	background-repeat:no-repeat;
+	background-size:cover;
+}

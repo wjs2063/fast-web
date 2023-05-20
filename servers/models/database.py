@@ -1,7 +1,5 @@
 from pymongo import MongoClient
-from ..config.constant import *
-from pymongo.errors import ConnectionFailure
-
+from configs.constant import *
 
 
 async def get_db():
