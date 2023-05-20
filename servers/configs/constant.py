@@ -1,7 +1,15 @@
 # Database
 # real_db
-ORIGIN_MONGODB = "mongodb://172.30.1.56:54555/test"
-TEST_MONGODB = "mongodb://172.30.1.56:54254/test"
+
+
+# for CI 
+IpAddress = "59.18.243.166"
+
+
+# for local
+WifiAddress = "172.30.1.56"
+ORIGIN_MONGODB = f"mongodb://{IpAddress}:54555/test"
+TEST_MONGODB = f"mongodb://{IpAddress}:54254/test"
 
 
 
