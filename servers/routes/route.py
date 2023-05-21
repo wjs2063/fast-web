@@ -38,5 +38,5 @@ async def create_user(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient 
     await db.users.insert_one(user)
     data = dict(await db.users.find_one(user))
     # serialize
-    #data["_id"] = str(data["_id"])
+    data["_id"] = str(data["_id"])
     return data
