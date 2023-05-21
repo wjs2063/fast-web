@@ -24,6 +24,8 @@ class User(CamelModel):
                 "disabled":"False",
             }
         }
+
+
 class UserData(BaseModel):
     #id : str = Field(...,alias = "_id")
     name : str = Field(min_length = 2,max_length = 15)
@@ -35,6 +37,10 @@ class UserData(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str
-        }
+
+
+
+# function
+
+def serializeId(data):
+    data["_id"] = str(data["_id"])

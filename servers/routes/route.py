@@ -1,7 +1,7 @@
 from fastapi import *
 from fastapi.responses import *
 from typing import Annotated
-from models.database import MongoClient,get_db
+from models.database import *
 from fastapi.staticfiles import StaticFiles
 from configs.constant import *
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
@@ -22,15 +22,21 @@ async def test(db: Annotated[MongoClient ,Depends(get_db)]):
 
 
 @apps.post("/api/user",response_model = UserData,status_code = 201)
-async def createUser(user :User,db: Annotated[MongoClient ,Depends(get_db)]):
+async def create_user(user :User,db: Annotated[MongoClient ,Depends(get_db)]):
     user = dict(user)
     # 중복체크
     db.users.insert_one(user)
     data = dict(db.users.find_one(user))
     # serialize
-    data["_id"] = str(data["_id"])
-
+    #data["_id"] = str(data["_id"])
     return data
 
-
-
+@apps.post("/api/user/async",response_model = UserData,status_code = 201)
+async def create_user(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    user = dict(user)
+    # 중복체크
+    await db.users.insert_one(user)
+    data = dict(await db.users.find_one(user))
+    # serialize
+    data["_id"] = str(data["_id"])
+    return data
