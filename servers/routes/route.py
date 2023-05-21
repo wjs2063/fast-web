@@ -20,7 +20,7 @@ async def test(db: Annotated[MongoClient ,Depends(get_db)]):
     db.user.insert_one({"example":datetime.utcnow()})
     return "hello World!"
 
-
+"""
 @apps.post("/api/user",response_model = UserData,status_code = 201)
 async def create_user(user :User,db: Annotated[MongoClient ,Depends(get_db)]):
     user = dict(user)
@@ -30,13 +30,13 @@ async def create_user(user :User,db: Annotated[MongoClient ,Depends(get_db)]):
     # serialize
     #data["_id"] = str(data["_id"])
     return data
+"""
 
-@apps.post("/api/user/async",response_model = UserData,status_code = 201)
-async def create_user(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+@apps.post("/api/user",response_model = UserData,status_code = 201)
+async def create_user_async(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     user = dict(user)
-    # 중복체크
+    set_datetime(user)
     await db.users.insert_one(user)
     data = dict(await db.users.find_one(user))
-    # serialize
-    data["_id"] = str(data["_id"])
+    #serializeId(data)
     return data

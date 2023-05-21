@@ -4,7 +4,7 @@ from fastapi_camelcase import CamelModel
 from bson import ObjectId
 from typing import *
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
-
+from datetime import datetime
 class User(CamelModel):
     name : str = Field(min_length = 2,max_length = 15)
     user_id: str = Field(min_length = 2,max_length = 15)
@@ -37,10 +37,18 @@ class UserData(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId : str
+        }
 
 
 
 # function
 
-def serializeId(data):
+def serialize_id(data):
     data["_id"] = str(data["_id"])
+
+
+def set_datetime(data):
+    data["create_time"] = datetime.utcnow()
+    data["update_time"] = datetime.utcnow()
