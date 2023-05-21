@@ -27,7 +27,7 @@ app.dependency_overrides[asyncdb] = override_async_db
 @pytest.mark.asyncio
 async def test_create_user():
     async with AsyncClient(app = app,base_url = base_url)  as ac:
-        response = await ac.post("/api/user/async",
+        response = await ac.post("/api/user",
     json = {"name": "jaehyeon",
        "user_id": "aaa1234",
        "email": "kkk@naver.com",
