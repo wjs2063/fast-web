@@ -11,6 +11,8 @@ class User(CamelModel):
     email : EmailStr = Field(default = None)
     password :str = Field(min_length = 7,max_length = 15)
     nickname : str = Field(min_length = 2,max_length = 15)
+    create_time : datetime
+    update_time :datetime
     disabled : bool
 
     class Config:
@@ -32,8 +34,6 @@ class UserData(BaseModel):
     user_id: str = Field(min_length = 2,max_length = 15)
     email : EmailStr = Field(default = None)
     nickname : str = Field(min_length = 2,max_length = 15)
-    create_time : datetime
-    update_time :datetime
     disabled : Union[bool,None]
     class Config(BaseConfig):
         orm_mode = True
