@@ -11,8 +11,6 @@ class User(CamelModel):
     email : EmailStr = Field(default = None)
     password :str = Field(min_length = 7,max_length = 15)
     nickname : str = Field(min_length = 2,max_length = 15)
-    create_time : datetime
-    update_time :datetime
     disabled : bool
 
     class Config:
