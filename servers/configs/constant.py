@@ -11,6 +11,9 @@ WifiAddress = "172.30.1.56"
 ORIGIN_MONGODB = f"mongodb://{IpAddress}:54555/test"
 TEST_MONGODB = f"mongodb://{IpAddress}:54254/test"
 
+LOCAL_MONGODB = f"mongodb://{WifiAddress}:54555/test"
+LOCAL_TESTDB = f"mongodb://{WifiAddress}:54254/test"
+
 
 
 
