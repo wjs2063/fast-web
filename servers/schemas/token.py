@@ -24,7 +24,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
     # jwt 토큰생
-    encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithms = ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     # decoding
     #print(jwt.decode(encoded_jwt,SECRET_KEY,algorithms = [ALGORITHM]))
     # 생성직후 decode 잘됨

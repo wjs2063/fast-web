@@ -10,7 +10,7 @@ WIFI_ADDRESS = "172.30.1.56"
 # for local
 
 ORIGIN_MONGODB = f"mongodb://{IP_ADDRESS}:54555/test"
-TEST_MONGODB = f"mongodb://{IP_ADDRESS}:54254/test"
+LOCAL_TEST = f"mongodb://{IP_ADDRESS}:54254/test"
 
 
 LOCAL_MONGODB = f"mongodb://{WIFI_ADDRESS}:54555/test"
