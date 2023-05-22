@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-          ALGORITHM : ${{secrets.ALGORITHM}}
+          ALGORITHM : "HS256"
           
       - name: Install dependencies
         run: |
