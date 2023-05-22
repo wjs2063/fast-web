@@ -25,6 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Environment Variable
         run: |
+          echo $ENV_FILE
           echo "ENV_FILE=$ENV_FILE" >> .env
         env:
           ENV_FILE : ${{secrets.ENV_FILE}}
