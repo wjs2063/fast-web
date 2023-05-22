@@ -13,6 +13,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      ENV_VAL : ${{secrets.ENV_FILE}}
     strategy:
       fail-fast: false
       matrix:
