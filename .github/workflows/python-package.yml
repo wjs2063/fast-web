@@ -26,6 +26,7 @@ jobs:
       - name: Environment Variable
         run: |
           echo $ENV_FILE
+          echo $SECRETKEY
           echo "ENV_FILE=$ENV_FILE" >> .env
         env:
           ENV_FILE : ${{secrets.ENV_FILE}}
