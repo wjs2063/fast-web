@@ -24,7 +24,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           ALGORITHM : ${{secrets.ALGORITHM}}
-          SECRETKEY : ${{secrets.SECRETKEY}}
           
       - name: Install dependencies
         run: |
