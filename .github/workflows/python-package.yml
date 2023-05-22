@@ -24,14 +24,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Environment Variable
-      
-        env:
-          ENV_FILE : ${{secrets.ENV_FILE}}
-          
-        run: |
-          echo $ENVFILE.ALGORITHM
-          echo $ENVFILE.SECRETKEY
-          echo "ENV_FILE=$ENV_FILE"  >> .env
+        with:
+          ALGORITHM : ${{secrets.ALGORITHM}}
+          SECRETKEY : ${{secrets.SECRETKEY}}
 
           
       
