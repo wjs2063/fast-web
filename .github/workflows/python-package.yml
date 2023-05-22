@@ -23,13 +23,9 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Environment Variable
-        with:
           ALGORITHM : ${{secrets.ALGORITHM}}
           SECRETKEY : ${{secrets.SECRETKEY}}
-
           
-      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
