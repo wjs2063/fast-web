@@ -29,7 +29,9 @@ jobs:
           echo $SECRETKEY
           echo "ENV_FILE=$ENV_FILE" >> .env
         env:
-          ENV_FILE : ${{secrets.ENV_FILE}}
+          ALGORITHM : ${{secrets.ALGORITHM}}
+          SECRETKEY : ${{secrets.SECRETKEY}}
+          
       
       - name: Install dependencies
         run: |
