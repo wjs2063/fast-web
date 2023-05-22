@@ -6,7 +6,7 @@ import httpx
 
 
 async def overrideSyncdb():
-    db = MongoClient(LOCAL_TESTDB)
+    db = MongoClient(TEST_MONGODB)
     try:
         yield db.local
     finally:

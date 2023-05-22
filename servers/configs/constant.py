@@ -1,3 +1,4 @@
+import os
 # Database
 # real_db
 
@@ -13,7 +14,13 @@ TEST_MONGODB = f"mongodb://{IpAddress}:54254/test"
 
 
 LOCAL_MONGODB = f"mongodb://{WifiAddress}:54555/test"
-LOCAL_TESTDB = f"mongodb://{WifiAddress}:54254/test"
+TEST_MONGODB = f"mongodb://{WifiAddress}:54254/test"
+
+ALGORITHM = os.environ["ALGORITHM"]
+SECRETKEY = os.environ["SECRETKEY"]
+ACCESS_TOKEN_EXPIRE_MINUTES = os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"]
+#REFRESH_TOKEN_EXPIRE_MINUTES = os.environ["REFRESH_TOKEN_EXPIRE_MINUTES"]
+
 
 
 
