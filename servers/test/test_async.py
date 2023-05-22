@@ -15,7 +15,7 @@ base_url = "http://172.30.1.56:54999"
 
 
 async def override_async_db():
-    db = motor_asyncio.AsyncIOMotorClient(LOCAL_TEST)
+    db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
     #db.get_io_loop = asyncio.get_event_loop
     try :
         yield db.local
@@ -27,7 +27,7 @@ app.dependency_overrides[asyncdb] = override_async_db
 
 @pytest.mark.asyncio
 async def test_create_user():
-    db = motor_asyncio.AsyncIOMotorClient(LOCAL_TEST)
+    db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
     db.local.users.drop()
     #db.users.drop()
     async with AsyncClient(app = app,base_url = base_url)  as ac:

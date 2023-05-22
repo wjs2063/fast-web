@@ -11,7 +11,7 @@ sub_main branch!
 
 
 async def override_sync_db():
-    db = MongoClient(LOCAL_TEST)
+    db = MongoClient(PUBLIC_TEST)
     try:
         yield db.local
     finally:
