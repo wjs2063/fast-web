@@ -48,7 +48,7 @@ async def test_login():
     async with AsyncClient(app = app,base_url = base_url)  as ac:
         response = await ac.post("/api/login",
             headers = {'Content-Type':  'application/x-www-form-urlencoded'},
-            content = 'grant_type=&username=aaa1234&password=1234567&scope=&client_id=&client_secret='
+            content = 'grant_type=&username=unknown&password=1234567&scope=&client_id=&client_secret='
              )
 
     assert response.status_code == 200

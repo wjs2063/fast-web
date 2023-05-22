@@ -5,10 +5,10 @@ import os
 
 # for CI 
 IP_ADDRESS = "59.18.243.166"
-
+WIFI_ADDRESS = "172.30.1.56"
 
 # for local
-WIFI_ADDRESS = "172.30.1.56"
+
 ORIGIN_MONGODB = f"mongodb://{IP_ADDRESS}:54555/test"
 TEST_MONGODB = f"mongodb://{IP_ADDRESS}:54254/test"
 
