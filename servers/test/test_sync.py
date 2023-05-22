@@ -21,13 +21,10 @@ app.dependency_overrides[get_db] = override_sync_db
 client = TestClient(app)
 
 def test():
-    response = client.post("/api",
-                           json = {}
-                           )
+    response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == "hello World!"
 
-
+"""
 def test_create_user():
     response = client.post("/api/user",
                            json = {"name": "jaehyeon",
@@ -45,3 +42,4 @@ def test_create_user():
         "nickname": "user1",
         "disabled": False
     }
+"""

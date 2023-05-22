@@ -1,9 +1,10 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from routes.route import apps
+import os
 
 app = FastAPI()
 app.include_router(apps)
-
 
 
 """

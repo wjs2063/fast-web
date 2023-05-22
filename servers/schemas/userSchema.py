@@ -5,6 +5,11 @@ from bson import ObjectId
 from typing import *
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
 from datetime import datetime
+from passlib.context import CryptContext
+
+# instance
+pwd_context = CryptContext(schemes=["bcrypt"],deprecated = "auto")
+
 class User(CamelModel):
     name : str = Field(min_length = 2,max_length = 15)
     user_id: str = Field(min_length = 2,max_length = 15)
@@ -52,3 +57,9 @@ def serialize_id(data):
 def set_datetime(data):
     data["create_time"] = datetime.utcnow()
     data["update_time"] = datetime.utcnow()
+
+async def get_user(db,user_id):
+    data = await db.users.find_one({"user_id":user_id})
+    if not data :
+        return None
+    return  dict(data)
