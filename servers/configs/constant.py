@@ -4,17 +4,17 @@ import os
 
 
 # for CI 
-IpAddress = "59.18.243.166"
-
+IP_ADDRESS = "59.18.243.166"
+WIFI_ADDRESS = "172.30.1.56"
 
 # for local
-WifiAddress = "172.30.1.56"
-ORIGIN_MONGODB = f"mongodb://{IpAddress}:54555/test"
-TEST_MONGODB = f"mongodb://{IpAddress}:54254/test"
+
+PUBLIC_MONGODB = f"mongodb://{IP_ADDRESS}:54555/test"
+PUBLIC_TEST = f"mongodb://{IP_ADDRESS}:54254/test"
 
 
-LOCAL_MONGODB = f"mongodb://{WifiAddress}:54555/test"
-TEST_MONGODB = f"mongodb://{WifiAddress}:54254/test"
+LOCAL_MONGODB = f"mongodb://{WIFI_ADDRESS}:54555/test"
+LOCAL_TEST = f"mongodb://{WIFI_ADDRESS}:54254/test"
 
 ALGORITHM = os.environ["ALGORITHM"]
 SECRETKEY = os.environ["SECRETKEY"]

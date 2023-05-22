@@ -5,12 +5,13 @@ from fastapi.testclient import TestClient
 
 """
 This is Synchroniaztion Test File
+sub_main branch!
 """
 
 
 
 async def override_sync_db():
-    db = MongoClient(TEST_MONGODB)
+    db = MongoClient(PUBLIC_TEST)
     try:
         yield db.local
     finally:
