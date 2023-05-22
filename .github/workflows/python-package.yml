@@ -46,9 +46,4 @@ jobs:
       - name: Test with pytest
         run: |
           pytest
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
       
