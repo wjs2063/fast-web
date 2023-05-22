@@ -37,10 +37,11 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name : Print environment
-        run : |
-          python -c 'import os;print(os.environ)'
         env:
-          ALGORITHM: ${{ secrets.ALGORITHM}} 
+          ALGORITHM: ${{ secrets.ALGORITHM}}
+        run : |
+          echo "ALGORITHM : $ALGORITHM "
+          python -c 'import os;' 
           
       - name: Test with pytest
         run: |
