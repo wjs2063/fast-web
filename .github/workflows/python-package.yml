@@ -12,6 +12,8 @@ env:
   ALGORITHM: ${{secrets.ALGORITHM}}
   SECRETKEY: ${{secrets.SECRETKEY}}
   ACCESS_TOKEN_EXPIRE_MINUTES: 30
+  OWN_EMAIL : ${{secrets.OWN_EMAIL}}
+  OWN_EMAIL_PASSWORD : $ {{secrets.OWN_EMAIL_PASSWORD}}
   
 jobs:
   build:
