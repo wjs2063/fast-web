@@ -13,8 +13,8 @@ PUBLIC_MONGODB = f"mongodb://{IP_ADDRESS}:54555/test"
 PUBLIC_TEST = f"mongodb://{IP_ADDRESS}:54254/test"
 
 
-LOCAL_MONGODB = f"mongodb://{WIFI_ADDRESS}:54555/test"
-LOCAL_TEST = f"mongodb://{WIFI_ADDRESS}:54254/test"
+PRIVATE_MONGODB = f"mongodb://{WIFI_ADDRESS}:54555/test"
+PRIVATE_TEST = f"mongodb://{WIFI_ADDRESS}:54254/test"
 
 ALGORITHM = os.environ["ALGORITHM"]
 SECRETKEY = os.environ["SECRETKEY"]

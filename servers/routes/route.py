@@ -18,16 +18,10 @@ apps = APIRouter()
 @apps.get("/",response_class=HTMLResponse)
 async def main(request: Request):
     return "hello World!"
-    #templates.TemplateResponse(f"{os.getcwd()}/templates/static/index.html",{"request":request})
 
 
-#apps.mount("/templates",StaticFiles(directory = f"{os.getcwd()}/templates/static"),name = "static")
-#templates = Jinja2Templates(directory="/templates/static")
 
-
-#login
-
-@apps.post("/api/login",response_model = Token,status_code = 200)
+@apps.post("/api/auth/login",response_model = Token,status_code = 200)
 async def login (request : Request,
                                   form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                                   db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
@@ -52,20 +46,14 @@ async def login (request : Request,
     access_token = create_access_token(
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
     )
-    #print(jwt.decode(access_token,SECRETKEY,algorithms = [ALGORITHM]))
 
     content = {"message" : "fastapi"}
     headers = {"access_token":access_token,"token_type": "bearer"}
     return JSONResponse(content = content,headers = headers)
 
 
-@apps.post("/api/test")
-async def test(db: Annotated[MongoClient ,Depends(get_db)]):
-    db.user.insert_one({"example":datetime.utcnow()})
-    return "hello World!"
 
-
-@apps.post("/api/user",response_model = UserData,status_code = 201)
+@apps.post("/api/auth/sign-up",response_model = UserData,status_code = 201)
 async def create_user_async(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     user = dict(user)
     current_user = await get_user(db,user["user_id"])
@@ -74,6 +62,20 @@ async def create_user_async(user :User,db: Annotated[motor_asyncio.AsyncIOMotorC
     user["password"] = pwd_context.hash(user["password"])
     set_datetime(user)
     await db.users.insert_one(user)
-    #data = dict(await db.users.find_one(user))
-    #serializeId(data)
     return user
+
+@apps.post("/api/auth/userId",status_code = 200)
+async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    current_user = await get_user(db,user_id)
+    if current_user:
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원ID 입니다.")
+    return JSONResponse(content = None)
+
+@apps.post("/api/auth/email",status_code = 200)
+async def duplicate_email(email_str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    current_user = await db.users.find_one({"email":email_str})
+    if current_user:
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 가입한 이메일 입니다.")
+    return JSONResponse(content = None)
+
+

@@ -27,7 +27,7 @@ def test():
 
 """
 def test_create_user():
-    response = client.post("/api/user",
+    response = client.post("/api/auth/sign-up",
                            json = {"name": "jaehyeon",
                                    "user_id": "aaa1234",
                                    "email": "kkk@naver.com",
