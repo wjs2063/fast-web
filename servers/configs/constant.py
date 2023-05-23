@@ -1,7 +1,8 @@
 import os
+from dotenv import load_dotenv
 # Database
 # real_db
-
+load_dotenv()
 
 # for CI 
 IP_ADDRESS = "59.18.243.166"
@@ -19,6 +20,11 @@ PRIVATE_TEST = f"mongodb://{WIFI_ADDRESS}:54254/test"
 ALGORITHM = os.environ["ALGORITHM"]
 SECRETKEY = os.environ["SECRETKEY"]
 ACCESS_TOKEN_EXPIRE_MINUTES = os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"]
+
+OWN_EMAIL = os.environ["OWN_EMAIL"]
+OWN_EMAIL_PASSWORD = os.environ["OWN_EMAIL_PASSWORD"]
+
+
 #REFRESH_TOKEN_EXPIRE_MINUTES = os.environ["REFRESH_TOKEN_EXPIRE_MINUTES"]
 
 
