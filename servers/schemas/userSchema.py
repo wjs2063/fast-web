@@ -4,7 +4,7 @@ from fastapi_camelcase import CamelModel
 from bson import ObjectId
 from typing import *
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
-from datetime import datetime
+from datetime import datetime,date
 from passlib.context import CryptContext
 
 # instance
@@ -16,6 +16,9 @@ class User(CamelModel):
     email : EmailStr = Field(default = None)
     password :str = Field(min_length = 7,max_length = 15)
     nickname : str = Field(min_length = 2,max_length = 15)
+    birth_year : int = Field(ge = 1900,le = date.today().year)
+    birth_month : int = Field(ge = 1,le = 12)
+    birth_day : int = Field(ge = 1, le = 31)
     disabled : bool
 
     class Config:
@@ -26,12 +29,15 @@ class User(CamelModel):
                 "email":"kkk@naver.com",
                 "password":"1234567",
                 "nickname":"user1",
+                "birth_year" :1900,
+                "birth_month" :5,
+                "birth_day" : 25,
                 "disabled":"False",
             }
         }
 
 
-class UserData(BaseModel):
+class UserData(CamelModel):
     #id : str = Field(...,alias = "_id")
     name : str = Field(min_length = 2,max_length = 15)
     user_id: str = Field(min_length = 2,max_length = 15)

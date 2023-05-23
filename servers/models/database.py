@@ -4,14 +4,14 @@ from motor import motor_asyncio
 
 
 async def get_db():
-    db = MongoClient(LOCAL_MONGODB)
+    db = MongoClient(PRIVATE_MONGODB)
     try:
         yield db.local
     finally:
         db.close()
 
 async def asyncdb():
-    db = motor_asyncio.AsyncIOMotorClient(LOCAL_MONGODB)
+    db = motor_asyncio.AsyncIOMotorClient(PRIVATE_MONGODB)
     try :
         yield db["local"]
     finally :
