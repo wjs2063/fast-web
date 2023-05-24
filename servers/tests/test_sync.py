@@ -1,5 +1,5 @@
 from models.database import *
-from main import app
+from main import main_app
 import pytest
 from fastapi.testclient import TestClient
 
@@ -18,8 +18,8 @@ async def override_sync_db():
         db.close()
 
 
-app.dependency_overrides[get_db] = override_sync_db
-client = TestClient(app)
+main_app.dependency_overrides[get_db] = override_sync_db
+client = TestClient(main_app)
 
 def test():
     response = client.get("/")
