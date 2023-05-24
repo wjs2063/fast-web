@@ -1,16 +1,12 @@
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from routes.route import apps
+from fastapi import FastAPI,Request
+from app.api import api_router
 import os
 
-app = FastAPI()
-app.include_router(apps)
+main_app = FastAPI()
+main_app.include_router(api_router)
 
 
-"""
-@app.post("/api")
-async def post(db: Annotated[MongoClient ,Depends(get_db)]):
-    db.user.insert_one({"example":1})
+
+@main_app.get("/")
+async def main(request: Request):
     return "hello World!"
-
-"""

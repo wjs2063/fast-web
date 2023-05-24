@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from main import app
+from main import main_app
 from models.database import *
 import asyncio
 import json
@@ -22,7 +22,7 @@ async def override_async_db():
     finally :
         db.close()
 
-app.dependency_overrides[asyncdb] = override_async_db
+main_app.dependency_overrides[asyncdb] = override_async_db
 
 
 @pytest.mark.asyncio
@@ -30,7 +30,7 @@ async def test_create_user():
     db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
     await db.local.users.drop()
     #db.users.drop()
-    async with AsyncClient(app = app,base_url = base_url)  as ac:
+    async with AsyncClient(app = main_app,base_url = base_url)  as ac:
         response = await ac.post("/api/auth/sign-up",
             headers = {"Content-Type": "application/json"},
             json = {
@@ -49,7 +49,7 @@ async def test_create_user():
 
 @pytest.mark.asyncio
 async def test_login():
-    async with AsyncClient(app = app,base_url = base_url)  as ac:
+    async with AsyncClient(app = main_app,base_url = base_url)  as ac:
         response = await ac.post("/api/auth/login",
             headers = {'Content-Type':  'application/x-www-form-urlencoded'},
             content = 'grant_type=&username=aaa1234&password=1234567&scope=&client_id=&client_secret='
@@ -57,7 +57,7 @@ async def test_login():
 
     assert response.status_code == 200
 
-    async with AsyncClient(app = app,base_url = base_url)  as ac:
+    async with AsyncClient(app = main_app,base_url = base_url)  as ac:
         response = await ac.post("/api/auth/login",
             headers = {'Content-Type':  'application/x-www-form-urlencoded'},
             content = 'grant_type=&username=whoareyou&password=1234567&scope=&client_id=&client_secret='
@@ -67,14 +67,14 @@ async def test_login():
 
 @pytest.mark.asyncio
 async def test_duplicate_userId():
-    async with AsyncClient(app = app, base_url = base_url) as ac:
+    async with AsyncClient(app = main_app, base_url = base_url) as ac:
         response = await ac.post("/api/auth/userId?user_id=aaa1234",
                                  #headers = {'Content-Type':  'application/x-www-form-urlencoded'},
                                  #content = "user_id=aaa1234"
                                  )
     assert response.status_code == 409
 
-    async with AsyncClient(app = app, base_url = base_url) as ac:
+    async with AsyncClient(app = main_app, base_url = base_url) as ac:
         response = await ac.post("/api/auth/userId?user_id=aaa12345",
                                  #headers = {'Content-Type':  'application/x-www-form-urlencoded'},
                                  #content = "user_id=aaa12345"
@@ -84,14 +84,14 @@ async def test_duplicate_userId():
 
 @pytest.mark.asyncio
 async def test_duplicate_email():
-    async with AsyncClient(app = app,base_url = base_url) as ac:
+    async with AsyncClient(app = main_app,base_url = base_url) as ac:
         response = await ac.post("/api/auth/email?email_str=kkk%40naver.com",
                                  #headers = {'Content-Type': 'application/x-www-form-urlencoded'},
                                  #content = "email_str=kkk%40naver.com'"
                                 )
     assert response.status_code == 409
 
-    async with AsyncClient(app = app,base_url = base_url) as ac:
+    async with AsyncClient(app = main_app,base_url = base_url) as ac:
         response = await ac.post("/api/auth/email?email_str=kkk1%40naver.com",
                                  #headers = {'Content-Type':  'application/x-www-form-urlencoded'},
                                  #content = "email_str=kkk%40naver.com'"

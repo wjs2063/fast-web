@@ -17,21 +17,13 @@ import os
 from email.mime.text import MIMEText
 from smtplib import SMTP
 
+router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
-apps = APIRouter()
-
-@apps.get("/",response_class=HTMLResponse)
-async def main(request: Request):
-    return "hello World!"
-
-
-
-@apps.post("/api/auth/login",response_model = Token,status_code = 200)
+@router.post("/login",response_model = Token,status_code = 200)
 async def login (request : Request,
-                                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
-                                  ):
+                 form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                 db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
+                 ):
     user = await get_user(db,form_data.username)
     if not user :
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
@@ -59,7 +51,7 @@ async def login (request : Request,
 
 
 
-@apps.post("/api/auth/sign-up",response_model = UserData,status_code = 201)
+@router.post("/sign-up",response_model = UserData,status_code = 201)
 async def create_user_async(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     user = dict(user)
     current_user = await get_user(db,user["user_id"])
@@ -70,40 +62,17 @@ async def create_user_async(user :User,db: Annotated[motor_asyncio.AsyncIOMotorC
     await db.users.insert_one(user)
     return user
 
-@apps.post("/api/auth/userId",status_code = 200)
+@router.post("/userId",status_code = 200)
 async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     current_user = await get_user(db,user_id)
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원ID 입니다.")
     return JSONResponse(content = None)
 
-@apps.post("/api/auth/email",status_code = 200)
+@router.post("/email",status_code = 200)
 async def duplicate_email(email_str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     current_user = await db.users.find_one({"email":email_str})
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 가입한 이메일 입니다.")
     return JSONResponse(content = None)
 
-
-@apps.post("/email")
-async def send_email(body: EmailSchema):
-    try:
-        msg = MIMEText(body.message, "html")
-        msg['Subject'] = body.subject
-        msg['From'] = f'CODE PLANET <{OWN_EMAIL}>'
-        msg['To'] = body.to
-
-        port = 587  # For SSL
-
-        # Connect to the email server
-        server = SMTP("smtp.naver.com", port)
-        server.starttls()
-        server.login(OWN_EMAIL, OWN_EMAIL_PASSWORD)
-
-        # Send the email
-        server.send_message(msg)
-        server.quit()
-        return {"message": "Email sent successfully"}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=e)
