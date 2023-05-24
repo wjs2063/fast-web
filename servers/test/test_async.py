@@ -28,7 +28,7 @@ app.dependency_overrides[asyncdb] = override_async_db
 @pytest.mark.asyncio
 async def test_create_user():
     db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
-    db.local.users.drop()
+    await db.local.users.drop()
     #db.users.drop()
     async with AsyncClient(app = app,base_url = base_url)  as ac:
         response = await ac.post("/api/auth/sign-up",
