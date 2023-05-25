@@ -15,32 +15,24 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from schemas.emailSchema import *
 import os
 from email.mime.text import MIMEText
-from smtplib import SMTP
+from schemas.mailSchema import *
 
 
 
 router = APIRouter()
 
 
+
 @router.post("/email")
-async def send_email(body: EmailSchema):
-    try:
-        msg = MIMEText(body.message, "html")
-        msg['Subject'] = body.subject
-        msg['From'] = f'CODE PLANET <{OWN_EMAIL}>'
-        msg['To'] = body.to
+async def simple_send(email: EmailSchema) -> JSONResponse:
+    html = """<p>Hi this CODE PLANET test mail, thanks for using CODE PLANET</p> """
 
-        port = 587  # For SSL
+    message = MessageSchema(
+        subject = "Fastapi-Mail module",
+        recipients = email.dict().get("email"),
+        body = html,
+        subtype = MessageType.html)
 
-        # Connect to the email server
-        server = SMTP("smtp.naver.com", port)
-        server.starttls()
-        server.login(OWN_EMAIL, OWN_EMAIL_PASSWORD)
-
-        # Send the email
-        server.send_message(msg)
-        server.quit()
-        return {"message": "Email sent successfully"}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=e)
+    fm = FastMail(conf)
+    await fm.send_message(message)
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
