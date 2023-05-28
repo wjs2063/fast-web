@@ -13,6 +13,6 @@ async def get_db():
 async def asyncdb():
     db = motor_asyncio.AsyncIOMotorClient(PRIVATE_MONGODB)
     try :
-        yield db["local"]
+        yield db.local
     finally :
         db.close()

@@ -12,7 +12,6 @@ from schemas.userSchema import *
 from bson import ObjectId
 from fastapi.templating import Jinja2Templates
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from schemas.emailSchema import *
 import os
 from email.mime.text import MIMEText
 from smtplib import SMTP

@@ -3,7 +3,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from configs.constant import *
 from typing import List
 class EmailSchema(BaseModel):
-    email: List[EmailStr]
+    email: EmailStr
 
 
 conf = ConnectionConfig(
