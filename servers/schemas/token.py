@@ -12,7 +12,9 @@ class Token:
     exp : datetime
     ip_addr : str
 
-
+@dataclass
+class EmailToken:
+    user_id: str
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()

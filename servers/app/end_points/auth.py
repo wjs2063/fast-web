@@ -12,14 +12,13 @@ from schemas.userSchema import *
 from bson import ObjectId
 from fastapi.templating import Jinja2Templates
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from schemas.emailSchema import *
 import os
 from email.mime.text import MIMEText
 from smtplib import SMTP
 
 router = APIRouter()
 
-@router.post("/login",response_model = Token,status_code = 200)
+@router.post("/login",response_model = Token,status_code = status.HTTP_200_OK)
 async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
@@ -51,28 +50,50 @@ async def login (request : Request,
 
 
 
-@router.post("/sign-up",response_model = UserData,status_code = 201)
-async def create_user_async(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+@router.post("/sign-up",response_model = UserData,status_code = status.HTTP_201_CREATED)
+async def create_user(user :User,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],token = Header()):
     user = dict(user)
     current_user = await get_user(db,user["user_id"])
     if current_user :
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원 입니다.")
+    decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+    if decoded_jwt.get("user_id") != user["user_id"]:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,detail = "invalid Token")
+    if decoded_jwt.get("email") != user["email"]:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid Token")
+
     user["password"] = pwd_context.hash(user["password"])
     set_datetime(user)
     await db.users.insert_one(user)
     return user
 
-@router.post("/userId",status_code = 200)
+@router.post("/userId",status_code = status.HTTP_200_OK)
 async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     current_user = await get_user(db,user_id)
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원ID 입니다.")
     return JSONResponse(content = None)
 
-@router.post("/email",status_code = 200)
-async def duplicate_email(email_str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+@router.post("/email",status_code = status.HTTP_200_OK)
+async def duplicate_email(email_str : EmailStr,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     current_user = await db.users.find_one({"email":email_str})
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 가입한 이메일 입니다.")
-    return JSONResponse(content = None)
+    return JSONResponse(content = {"message" : "사용가능한 이메일입니다"})
+
+
+
+@router.post("/register/validation",status_code = status.HTTP_200_OK)
+async def validate_token(token:str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+    user_id = decoded_jwt.get("user_id")
+    email = decoded_jwt.get("email")
+    query = {
+        "user_id":user_id,
+        "email" : email
+    }
+    user = await db.users.find_one(query)
+    if user:
+        HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
+    return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
 
