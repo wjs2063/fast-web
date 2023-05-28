@@ -16,7 +16,7 @@ base_url = "http://172.30.1.56:54999"
 
 
 async def override_async_db():
-    db = motor_asyncio.AsyncIOMotorClient(PUBLIC__TEST)
+    db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
     #db.get_io_loop = asyncio.get_event_loop
     try :
         yield db.local
