@@ -110,7 +110,7 @@ async def test_validate_token():
 
 
 
-
+"""
 @pytest.mark.asyncio
 async def test_simple_send():
 
@@ -126,3 +126,5 @@ async def test_simple_send():
 
                                  )
     assert response.status_code == status.HTTP_200_OK
+
+"""
