@@ -6,9 +6,13 @@ from typing import *
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
 from datetime import datetime,date
 from passlib.context import CryptContext
-
+from enum import Enum
 # instance
 pwd_context = CryptContext(schemes=["bcrypt"],deprecated = "auto")
+
+class Gender(str,Enum):
+    남성 : "남성"
+    여성 : "여성"
 
 class User(CamelModel):
     name : str = Field(min_length = 2,max_length = 15)
@@ -16,25 +20,29 @@ class User(CamelModel):
     email : EmailStr = Field(default = None)
     password :str = Field(min_length = 7,max_length = 15)
     nickname : str = Field(min_length = 2,max_length = 15)
+    gender : str
     birth_year : int = Field(ge = 1900,le = date.today().year)
     birth_month : int = Field(ge = 1,le = 12)
     birth_day : int = Field(ge = 1, le = 31)
     disabled : bool
 
     class Config:
+        use_enum_values = True
         schema_extra = {
             "example":{
                 "name":"jaehyeon",
                 "user_id":"aaa1234",
                 "email":"kkk@naver.com",
+                "gender" :"남성",
                 "password":"1234567",
                 "nickname":"user1",
                 "birth_year" :1900,
                 "birth_month" :5,
                 "birth_day" : 25,
-                "disabled":"False",
+                "disabled":True,
             }
         }
+
 
 
 class UserData(CamelModel):

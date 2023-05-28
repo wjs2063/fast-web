@@ -1,8 +1,11 @@
 import os
 from dotenv import load_dotenv
+from fastapi.security import OAuth2PasswordBearer
 # Database
 # real_db
 load_dotenv()
+
+
 
 # for CI 
 IP_ADDRESS = "59.18.243.166"
@@ -27,7 +30,7 @@ OWN_EMAIL_PASSWORD = os.environ["OWN_EMAIL_PASSWORD"]
 
 #REFRESH_TOKEN_EXPIRE_MINUTES = os.environ["REFRESH_TOKEN_EXPIRE_MINUTES"]
 
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 

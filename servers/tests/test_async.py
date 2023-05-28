@@ -12,7 +12,7 @@ This is a async Test File
 
 
 
-base_url = "http://172.30.1.56:54999"
+base_url = "http://172.17.0.1"
 
 
 async def override_async_db():
@@ -34,19 +34,26 @@ async def test_create_user():
     async with AsyncClient(app = main_app,base_url = base_url)  as ac:
         response = await ac.post("/api/auth/sign-up",
             headers = {"Content-Type": "application/json",
-                       "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWFhMTIzNCIsImVtYWlsIjoiamFoeTUzNTJAbmF2ZXIuY29tIn0.yEfYWY-bhZ9bTvMEGM0_kAjS2zqabANCir2Aap6tlC4"
+                       "accept": "application/json"
                        },
-            json = {
-                "name": "jaehyeon",
-                "user_id": "aaa1234",
-                "email": "jahy5352@naver.com",
-                "password": "1234567",
-                "nickname": "user1",
-                "birth_year": 1900,
-                "birth_month": 5,
-                "birth_day": 25,
-                "disabled": "False"
+            content = json.dumps({
+                "user": {
+                    "name": "jaehyeon",
+                    "user_id": "aaa1234",
+                    "email": "jahy5352@naver.com",
+                    "gender": "남성",
+                    "password": "1234567",
+                    "nickname": "user1",
+                    "birth_year": 1900,
+                    "birth_month": 5,
+                    "birth_day": 25,
+                    "disabled": True
+                },
+                "token": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaXAiOiIxMjcuMC4wLjEiLCJlbWFpbCI6ImphaHk1MzUyQG5hdmVyLmNvbSIsImlhdCI6MTY4NTI5Njk0MX0.SHnDi5xkdulbanWcuAfuhmdl2tzf0OY3C6-Umg6eAX8"
+                }
             }
+            )
         )
     assert response.status_code == status.HTTP_201_CREATED
 
