@@ -32,3 +32,8 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     # 생성직후 decode 잘됨
     #print(type(encoded_jwt),encoded_jwt)
     return encoded_jwt
+
+
+@dataclass
+class Encode_token:
+    token : str

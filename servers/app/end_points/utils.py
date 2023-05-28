@@ -24,10 +24,11 @@ router = APIRouter()
 
 
 @router.post("/register/email")
-async def simple_send(email: EmailSchema,user_id:str) -> JSONResponse:
+async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
     data = {
-        "user_id" : user_id,
-        "email" : email.dict().get("email")
+        "client_ip" : "127.0.0.1",
+        "email" : email.dict().get("email"),
+        "iat" : datetime.utcnow()
     }
     encoded_jwt_token = jwt.encode(data, SECRETKEY, algorithm =  ALGORITHM)
     html = f"""<p>Hi this CODE PLANET test mail, thanks for using CODE PLANET <br></br>
