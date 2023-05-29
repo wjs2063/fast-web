@@ -11,7 +11,7 @@ async def get_db():
         db.close()
 
 async def asyncdb():
-    db = motor_asyncio.AsyncIOMotorClient(PRIVATE_MONGODB)
+    db = motor_asyncio.AsyncIOMotorClient(PUBLIC_MONGODB)
     try :
         yield db.local
     finally :

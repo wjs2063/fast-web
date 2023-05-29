@@ -38,9 +38,10 @@ async def login (request : Request,
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
         "user_id" : user["user_id"],
-        "ip_addr" : request.client.host
+        "client_ip" : request.client.host
     }
-
+    print(data)
+    print(request.client.host)
     access_token = create_access_token(
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
     )
@@ -93,6 +94,7 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
     query = {
         "email" : email
     }
+    print(client_ip,request.client.host)
     user = await db.users.find_one(query)
     if client_ip != request.client.host:
         HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
