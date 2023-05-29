@@ -26,7 +26,7 @@ router = APIRouter()
 @router.post("/register/email")
 async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
     data = {
-        "client_ip" : "127.0.0.1",
+        "client_ip" : request.client.host,
         "email" : email.dict().get("email"),
         "iat" : datetime.utcnow()
     }
