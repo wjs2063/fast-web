@@ -4,17 +4,33 @@ from typing import Union
 from configs.constant import *
 from configs.constant import ACCESS_TOKEN_EXPIRE_MINUTES
 from jose import JWTError, jwt
+from pydantic import EmailStr
 
 @dataclass
-class Token:
+class SessionToken:
     user_id:str
     iat : datetime
     exp : datetime
-    ip_addr : str
+    client_ip : str
+    token_type : str 
+
 
 @dataclass
 class EmailToken:
-    user_id: str
+    email: EmailStr
+    iat : datetime
+    exp : datetime 
+    client_ip : str
+    token_type : str 
+
+@dataclass 
+class AccountToken:
+    user_id : str 
+    iat : datetime 
+    exp : datetime 
+    token_type : str 
+
+
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()

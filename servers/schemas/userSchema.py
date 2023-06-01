@@ -60,6 +60,8 @@ class UserData(CamelModel):
             ObjectId : str
         }
 
+class Password(CamelModel):
+    password : str 
 
 
 # function
