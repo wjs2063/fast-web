@@ -19,7 +19,7 @@ from smtplib import SMTP
 
 router = APIRouter()
 
-@router.post("/login",response_model = Token,status_code = status.HTTP_200_OK)
+@router.post("/login",response_model = SessionToken,status_code = status.HTTP_200_OK)
 async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
@@ -38,10 +38,11 @@ async def login (request : Request,
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
         "user_id" : user["user_id"],
-        "client_ip" : request.client.host
+        "client_ip" : request.client.host,
+        "token_type" : "login"
     }
-    print(data)
-    print(request.client.host)
+
+
     access_token = create_access_token(
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
     )
@@ -89,12 +90,13 @@ async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[mot
 @router.post("/register/validation",status_code = status.HTTP_200_OK)
 async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+    if decoded_jwt.get("token_type") != "email":
+        HTTPException(status_code = status.HTTP_404_NOT_FOUND)
     client_ip = decoded_jwt.get("client_ip")
     email = decoded_jwt.get("email")
     query = {
         "email" : email
     }
-    print(client_ip,request.client.host)
     user = await db.users.find_one(query)
     if client_ip != request.client.host:
         HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
