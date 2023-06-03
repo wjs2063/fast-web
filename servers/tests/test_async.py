@@ -12,7 +12,7 @@ This is a async Test File
 
 
 
-base_url = "http://172.17.0.1"
+base_url = "http://34.64.93.149"
 
 
 async def override_async_db():
@@ -126,24 +126,26 @@ async def test_account_token():
 
 
 @pytest.mark.asyncio
-async def test_account_token():
+async def test_reset_password():
     async with AsyncClient(app = main_app,base_url = base_url) as ac:
-        response = await ac.post("/api/account/reset_password?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWFhMTIzNCIsInRva2VuX3R5cGUiOiJhY2NvdW50IiwiY2xpZW50X2lwIjoiNTkuMTguMjQzLjE2NiIsImlhdCI6MTY4NTc5NjE3NiwiZXhwIjoxNjg1Nzk3MDc2fQ.lyQeez1it3uYW-TlLJrr40LVaqVXcSEgD5kfVN53iB8",
+        token_response = await ac.post("/api/account/token?user_id=aaa1234",
+                            headers = {
+                                'Content-Type': 'application/json',
+                                'accept': 'application/json'},
+                            json = {
+                                "password":"1234567"
+                            }
+                            )
+        token = token_response.json()
+        response = await ac.post(f"/api/account/reset_password?token={token}",
                                  json = {
                                      "password": "234567"
                                  }
                                  )
-    assert response.status_code == status.HTTP_409_CONFLICT
+        
+    assert response.status_code == status.HTTP_200_OK
 
 
-@pytest.mark.asyncio
-async def test_reset_password():
-    pass
-    """
-        async with AsyncClient(app = main_app,base_url = base_url) as ac:
-        pass
-        response = await ac.post()
-    """
 
 """
 @pytest.mark.asyncio
