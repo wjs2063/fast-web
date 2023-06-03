@@ -126,6 +126,17 @@ async def test_account_token():
 
 
 @pytest.mark.asyncio
+async def test_account_token():
+    async with AsyncClient(app = main_app,base_url = base_url) as ac:
+        response = await ac.post("/api/account/reset_password?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWFhMTIzNCIsInRva2VuX3R5cGUiOiJhY2NvdW50IiwiY2xpZW50X2lwIjoiNTkuMTguMjQzLjE2NiIsImlhdCI6MTY4NTc5NjE3NiwiZXhwIjoxNjg1Nzk3MDc2fQ.lyQeez1it3uYW-TlLJrr40LVaqVXcSEgD5kfVN53iB8",
+                                 json = {
+                                     "password": "234567"
+                                 }
+                                 )
+    assert response.status_code == status.HTTP_409_CONFLICT
+
+
+@pytest.mark.asyncio
 async def test_reset_password():
     pass
     """
