@@ -25,7 +25,8 @@ class EmailToken:
 
 @dataclass 
 class AccountToken:
-    user_id : str 
+    user_id : str
+    client_ip: str 
     iat : datetime 
     exp : datetime 
     token_type : str 
@@ -49,7 +50,10 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     #print(type(encoded_jwt),encoded_jwt)
     return encoded_jwt
 
+def decode_jwt_token(token : str):
+    decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+    return decoded_jwt
 
 @dataclass
-class Encode_token:
+class Encode_Token:
     token : str

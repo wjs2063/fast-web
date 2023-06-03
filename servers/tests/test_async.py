@@ -112,10 +112,27 @@ async def test_duplicate_email():
 async def test_validate_token():
     async with AsyncClient(app = main_app,base_url = base_url) as ac :
         response = await ac.post("/api/auth/register/validation?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiamFoeTUzNTIiLCJlbWFpbCI6ImphaHk1MzUyQG5hdmVyLmNvbSJ9.VmRgWsilyYNeIz7ywxmZ8brjUdaRFmzJXGhHb7YjxnY")
-
         assert response.status_code == status.HTTP_200_OK
 
+@pytest.mark.asyncio
+async def test_account_token():
+    async with AsyncClient(app = main_app,base_url = base_url) as ac:
+        response = await ac.post("/api/account/token?user_id=aaa1234",
+                                 json = {
+                                     "password":"1234567"
+                                 }
+                                 )
+    assert response.status_code == status.HTTP_200_OK
 
+
+@pytest.mark.asyncio
+async def test_reset_password():
+    pass
+    """
+        async with AsyncClient(app = main_app,base_url = base_url) as ac:
+        pass
+        response = await ac.post()
+    """
 
 """
 @pytest.mark.asyncio
