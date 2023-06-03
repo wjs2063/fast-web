@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pydantic import constr
 from fastapi_camelcase import CamelModel
+from fastapi import *
 from bson import ObjectId
 from typing import *
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
@@ -79,3 +80,11 @@ async def get_user(db,user_id):
     if not data :
         return None
     return  dict(data)
+
+def check_password(plain_password,hashed_password):
+    if not pwd_context.verify(plain_password,hashed_password):
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
+                            detail = "Invalid password",
+                            #headers={"WWW-Authenticate": "Bearer"},
+                            )
+

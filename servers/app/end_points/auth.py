@@ -30,11 +30,8 @@ async def login (request : Request,
                             detail = "user is not exist",
                             #headers={"WWW-Authenticate": "Bearer"},
                             )
-    if not pwd_context.verify(form_data.password,user['password']):
-        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
-                            detail = "Invalid password",
-                            #headers={"WWW-Authenticate": "Bearer"},
-                            )
+    check_password(form_data.password,user["password"])
+
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
         "user_id" : user["user_id"],
@@ -54,11 +51,11 @@ async def login (request : Request,
 @router.post("/sign-up",response_model = UserData,status_code = status.HTTP_201_CREATED)
 async def create_user(request:Request,user :User,token : Encode_Token,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     user = dict(user)
-    token = token.token
+    encode_token = token.token
     current_user = await get_user(db,user["user_id"])
     if current_user :
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원 입니다.")
-    decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+    decoded_jwt = decode_jwt_token(token = encode_token)
     if decoded_jwt.get("client_ip") != request.client.host :
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "invalid Token !")
     if decoded_jwt.get("email") != user["email"]:
@@ -91,13 +88,13 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
     decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
     if decoded_jwt.get("token_type") != "email":
         HTTPException(status_code = status.HTTP_404_NOT_FOUND)
-    client_ip = decoded_jwt.get("client_ip")
-    email = decoded_jwt.get("email")
+    
     query = {
-        "email" : email
+        "email" :decoded_jwt.get("email")
     }
     user = await find_one(db,query)
-    if client_ip != request.client.host:
+
+    if decoded_jwt.get("client_ip") != request.client.host:
         HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
     if user:
         HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
