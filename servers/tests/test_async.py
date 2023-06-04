@@ -5,6 +5,7 @@ from main import main_app
 from models.database import *
 import asyncio
 import json
+from configs.constant import *
 """
 This is a async Test File 
 """
@@ -12,7 +13,7 @@ This is a async Test File
 
 
 
-base_url = "http://34.64.93.149"
+base_url = f"http://{os.environ['ALLOW_ORIGIN_2']}"
 
 
 async def override_async_db():
@@ -26,11 +27,16 @@ async def override_async_db():
 main_app.dependency_overrides[asyncdb] = override_async_db
 
 
+
+@pytest.mark.asyncio
+async def test_reset():
+    pass
+
 @pytest.mark.asyncio
 async def test_create_user():
     db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
     await db.local.users.drop()
-    #db.users.drop()
+    await db.local.token.drop()
     async with AsyncClient(app = main_app,base_url = base_url)  as ac:
         response = await ac.post("/api/auth/sign-up",
             headers = {"Content-Type": "application/json",
@@ -50,7 +56,7 @@ async def test_create_user():
                     "disabled": True
                 },
                 "token": {
-                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaXAiOiIxMjcuMC4wLjEiLCJlbWFpbCI6ImphaHk1MzUyQG5hdmVyLmNvbSIsImlhdCI6MTY4NTI5Njk0MX0.SHnDi5xkdulbanWcuAfuhmdl2tzf0OY3C6-Umg6eAX8"
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaXAiOiI1OS4xOC4yNDMuMTY2IiwiZW1haWwiOiJqYWh5NTM1MkBuYXZlci5jb20iLCJ0b2tlbl90eXBlIjoiZW1haWwiLCJpYXQiOjE2ODU4NzIyNjAsImV4cCI6MTcwNDAxNjI2MH0.z3gfihq7Yhu6s346mfZH8AnGoOG0jYuNf8z_S80hJuk"
                 }
             }
             )
@@ -74,44 +80,48 @@ async def test_login():
             )
     assert  response.status_code == status.HTTP_401_UNAUTHORIZED
 
-
 @pytest.mark.asyncio
 async def test_duplicate_userId():
     async with AsyncClient(app = main_app, base_url = base_url) as ac:
-        response = await ac.post("/api/auth/userId?user_id=aaa1234",
+        response = await ac.get("/api/auth/userId?user_id=aaa1234",
                                  #headers = {'Content-Type':  'application/x-www-form-urlencoded'},
                                  #content = "user_id=aaa1234"
                                  )
     assert response.status_code == status.HTTP_409_CONFLICT
 
     async with AsyncClient(app = main_app, base_url = base_url) as ac:
-        response = await ac.post("/api/auth/userId?user_id=aaa12345",
+        response = await ac.get("/api/auth/userId?user_id=aaa12345",
                                  #headers = {'Content-Type':  'application/x-www-form-urlencoded'},
                                  #content = "user_id=aaa12345"
                                  )
     assert response.status_code == status.HTTP_200_OK
 
-
 @pytest.mark.asyncio
 async def test_duplicate_email():
     async with AsyncClient(app = main_app,base_url = base_url) as ac:
-        response = await ac.post("/api/auth/email?email_str=jahy5352%40naver.com",
+        response = await ac.get("/api/auth/email?email_str=jahy5352%40naver.com",
                                  #headers = {'Content-Type': 'application/x-www-form-urlencoded'},
                                  #content = "email_str=kkk%40naver.com'"
                                 )
     assert response.status_code == status.HTTP_409_CONFLICT
 
     async with AsyncClient(app = main_app,base_url = base_url) as ac:
-        response = await ac.post("/api/auth/email?email_str=kkk1%40naver.com",
+        response = await ac.get("/api/auth/email?email_str=kkk1%40naver.com",
                                  #headers = {'Content-Type':  'application/x-www-form-urlencoded'},
                                  #content = "email_str=kkk%40naver.com'"
                                  )
     assert response.status_code == status.HTTP_200_OK
 
+
+
+
+
+
+
 @pytest.mark.asyncio
 async def test_validate_token():
     async with AsyncClient(app = main_app,base_url = base_url) as ac :
-        response = await ac.post("/api/auth/register/validation?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiamFoeTUzNTIiLCJlbWFpbCI6ImphaHk1MzUyQG5hdmVyLmNvbSJ9.VmRgWsilyYNeIz7ywxmZ8brjUdaRFmzJXGhHb7YjxnY")
+        response = await ac.get("/api/auth/register/validation?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaXAiOiI1OS4xOC4yNDMuMTY2IiwiZW1haWwiOiJqYWh5NTM1MkBuYXZlci5jb20iLCJ0b2tlbl90eXBlIjoiZW1haWwiLCJpYXQiOjE2ODU4NzEzODksImV4cCI6MTcwNDAxNTM4OX0.pBK9lCcR8WD33UiKH-Sn0m3TmVT1-BHMymo7rxR06gQ")
         assert response.status_code == status.HTTP_200_OK
 
 @pytest.mark.asyncio
@@ -144,6 +154,15 @@ async def test_reset_password():
                                  )
         
     assert response.status_code == status.HTTP_200_OK
+
+@pytest.mark.asyncio
+async def test_generate_access_token():
+    pass
+
+
+@pytest.mark.asyncio
+async def test_database_reset():
+    pass 
 
 
 
