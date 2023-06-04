@@ -6,6 +6,7 @@ from schemas.token import *
 from fastapi.staticfiles import StaticFiles
 from configs.constant import *
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
+from configs.security import *
 from passlib.context import CryptContext
 from datetime import datetime,timedelta
 from schemas.userSchema import *
@@ -28,9 +29,9 @@ async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
     data = {
         "client_ip" : request.client.host,
         "email" : email.dict().get("email"),
-        "iat" : datetime.utcnow()
+        "token_type" : "email"
     }
-    encoded_jwt_token = jwt.encode(data, SECRETKEY, algorithm =  ALGORITHM)
+    encoded_jwt_token = encode_access_token(data,expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES)
     html = f"""<p>Hi this CODE PLANET test mail, thanks for using CODE PLANET <br></br>
         TOKEN : {encoded_jwt_token}
         

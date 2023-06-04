@@ -23,7 +23,7 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
         "token_type" : "account",
         "client_ip" : request.client.host
     }
-    account_token = create_access_token(data = data)
+    account_token = encode_access_token(data = data)
     return account_token
 
 
