@@ -2,7 +2,7 @@ from models.database import *
 from main import main_app
 import pytest
 from fastapi.testclient import TestClient
-
+from main import *
 """
 This is Synchroniaztion Test File
 sub_main branch!
@@ -19,6 +19,7 @@ async def override_sync_db():
 
 
 main_app.dependency_overrides[get_db] = override_sync_db
+main_app.user_middleware.clear()
 client = TestClient(main_app)
 
 def test():
