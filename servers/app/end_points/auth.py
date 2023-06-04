@@ -27,6 +27,7 @@ async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
                  ):
+    print(dict(request))
     user = await get_user(db,form_data.username)
     if not user :
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
@@ -46,13 +47,13 @@ async def login (request : Request,
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
     )
     token = Encode_Token(token = access_token)
-    return JSONResponse(headers = {
-        "refresh_token" : refresh_token
-    },
+    response = JSONResponse(
     content = {
         "token":jsonable_encoder(token)
     }
     )
+    response.set_cookie(key = "refresh_token",value = refresh_token,httponly = True)
+    return response
 
 
 
@@ -111,6 +112,7 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
 @router.post("/accessToken")
 async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),],refresh_token: str = Header()):
     try :
+        print(request)
         decoded_refresh_token = decode_jwt_token(refresh_token)
         # 만료 체크 
         if not decoded_refresh_token :
