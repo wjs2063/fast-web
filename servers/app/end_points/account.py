@@ -4,6 +4,8 @@ from models.database import *
 from models.crud import *
 from schemas.userSchema import *
 from schemas.token import *
+from configs.security import *
+
 router = APIRouter()
 
 
@@ -15,7 +17,7 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
     if not user_info:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
     user_info = dict(user_info) 
-    check_password(password,user_info["password"])
+    verify_password(password,user_info["password"])
     data = {
         "user_id" : user_id,
         "token_type" : "account",
@@ -33,8 +35,8 @@ async def reset_password(request:Request,token : str,password : Password,
         "user_id":decoded_token.get("user_id")
         }
     user = await find_one(db,query)
-    check_client_ip(decoded_token = decoded_token,request = request)
-    check_token_type(decoded_token = decoded_token,token_type = "account")
+    verify_client_ip(decoded_token = decoded_token,request = request)
+    verify_token_type(decoded_token = decoded_token,token_type = "account")
     password = password.password 
     find_query = {
         "user_id" : decoded_token.get("user_id")

@@ -9,7 +9,6 @@ from datetime import datetime,date
 from passlib.context import CryptContext
 from enum import Enum
 # instance
-pwd_context = CryptContext(schemes=["bcrypt"],deprecated = "auto")
 
 class Gender(str,Enum):
     남성 : "남성"
@@ -81,7 +80,7 @@ async def get_user(db,user_id):
         return None
     return  dict(data)
 
-def check_password(plain_password,hashed_password):
+def verify_password(plain_password,hashed_password):
     if not pwd_context.verify(plain_password,hashed_password):
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
                             detail = "Invalid password",

@@ -16,6 +16,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 import os
 from email.mime.text import MIMEText
 from smtplib import SMTP
+from configs.security import *
 
 router = APIRouter()
 
@@ -30,7 +31,7 @@ async def login (request : Request,
                             detail = "user is not exist",
                             #headers={"WWW-Authenticate": "Bearer"},
                             )
-    check_password(form_data.password,user["password"])
+    verify_password(form_data.password,user["password"])
 
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
