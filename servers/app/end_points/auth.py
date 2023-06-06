@@ -27,7 +27,6 @@ async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
                  ):
-    print(dict(request))
     user = await get_user(db,form_data.username)
     if not user :
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
@@ -39,11 +38,10 @@ async def login (request : Request,
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
         "user_id" : user["user_id"],
-        "client_ip" : request.client.host,
         "token_type" : "login"
     }
-    refresh_token = await get_refresh_token(db,data,user["user_id"])
-    access_token = encode_access_token(
+    refresh_token = await get_refresh_token(db,request = request,data = data,user_id = user["user_id"])
+    access_token = encode_access_token(request = request,
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
     )
     token = Encode_Token(token = access_token)
@@ -53,6 +51,7 @@ async def login (request : Request,
     }
     )
     response.set_cookie(key = "refresh_token",value = refresh_token,httponly = True)
+    print(response.headers)
     return response
 
 
@@ -101,8 +100,6 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
         }
         user = await find_one(db,query)
 
-        if decoded_jwt.get("client_ip") != request.client.host:
-            HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
         if user:
             HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
         return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
@@ -120,10 +117,9 @@ async def generate_access_token(request:Request,db: Annotated[motor_asyncio.Asyn
         user_id = decoded_refresh_token.get("user_id")
         data = {
         "user_id" : user_id,
-        "client_ip" : request.client.host,
         "token_type" : "login"
         }
-        access_token = encode_access_token(
+        access_token = encode_access_token(request = request,
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
         )
         token = Encode_Token(token = access_token)

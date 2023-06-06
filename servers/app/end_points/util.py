@@ -31,7 +31,7 @@ async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
         "email" : email.dict().get("email"),
         "token_type" : "email"
     }
-    encoded_jwt_token = encode_access_token(data,expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES)
+    encoded_jwt_token = encode_access_token(request = request,data = data,expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES)
     html = f"""<p>Hi this CODE PLANET test mail, thanks for using CODE PLANET <br></br>
         TOKEN : {encoded_jwt_token}
         
