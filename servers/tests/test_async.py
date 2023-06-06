@@ -5,6 +5,7 @@ from main import main_app
 from models.database import *
 import asyncio
 import json
+import os
 from configs.constant import *
 """
 This is a async Test File 
@@ -13,12 +14,11 @@ This is a async Test File
 
 
 
-base_url = f"http://{os.environ['ALLOW_ORIGIN_2']}"
+base_url = "http://34.64.212.38"
 
 
 async def override_async_db():
     db = motor_asyncio.AsyncIOMotorClient(PUBLIC_TEST)
-    #db.get_io_loop = asyncio.get_event_loop
     try :
         yield db.local
     finally :

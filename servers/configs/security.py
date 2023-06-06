@@ -13,33 +13,39 @@ import pymongo
 import time
 pwd_context = CryptContext(schemes=["bcrypt"],deprecated = "auto")
 
-def encode_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
+def encode_access_token(request:Request,data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
     current_time = datetime.utcnow()
     if expires_delta:
         expire_time = current_time + timedelta(minutes = int(expires_delta))
     else:
         expire_time = current_time + timedelta(minutes = 15)
+    r = dict(request)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
+    to_encode.update({"client_ip":r["headers"][0][1].decode()})
+    print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
 
-def encode_refresh_token(data:dict):
+def encode_refresh_token(request:Request,data:dict):
     to_encode = data.copy()
     current_time = datetime.utcnow()
     expire_time = current_time + timedelta(days = int(REFRESH_TOKEN_EXPIRE_DAY))
+    r = dict(request)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
+    to_encode.update({"client_ip":r["headers"][0][1].decode()})
+    print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
 
-async def get_refresh_token(db,data:dict,user_id):
+async def get_refresh_token(db,request,data:dict,user_id):
     refresh_token = await db.token.find({"user_id": user_id}).sort([("created_at",pymongo.DESCENDING)]).limit(1).to_list(length = 1)
     if not refresh_token:
         query  = {
             "user_id": user_id,
-            "refresh_token" : encode_refresh_token(data),
+            "refresh_token" : encode_refresh_token(request = request,data = data),
             "created_at":datetime.utcnow()
             }
         await db.token.insert_one(query)

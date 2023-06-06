@@ -21,9 +21,8 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
     data = {
         "user_id" : user_id,
         "token_type" : "account",
-        "client_ip" : request.client.host
     }
-    account_token = encode_access_token(data = data)
+    account_token = encode_access_token(request = request,data = data)
     return account_token
 
 
@@ -35,7 +34,7 @@ async def reset_password(request:Request,token : str,password : Password,
         "user_id":decoded_token.get("user_id")
         }
     user = await find_one(db,query)
-    verify_client_ip(decoded_token = decoded_token,request = request)
+    #verify_client_ip(decoded_token = decoded_token,request = request)
     verify_token_type(decoded_token = decoded_token,token_type = "account")
     password = password.password 
     find_query = {

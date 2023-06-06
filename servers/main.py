@@ -7,13 +7,11 @@ import os
 
 main_app = FastAPI()
 main_app.include_router(api_router)
-origins = [
-    os.environ["ALLOW_ORIGIN_1"],
-    os.environ["ALLOW_ORIGIN_2"],
+origins = {
+    os.environ['ALLOW_ORIGIN_1'],
+    os.environ['ALLOW_ORIGIN_2'],
     os.environ["ALLOW_ORIGIN_3"],
-    "127.0.0.1",
-    "http://localhost"
-]
+}
 
 main_app.add_middleware(
     TrustedHostMiddleware, allowed_hosts = origins
@@ -30,5 +28,6 @@ main_app.add_middleware(
 
 @main_app.get("/")
 async def main(request: Request):
-    print(dict(request))
+    r = dict(request)
+    print(r["headers"][0][1].decode())
     return "Hello. Welcome to Code Planet"
