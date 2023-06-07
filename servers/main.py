@@ -4,6 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from configs.constant import *
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import os
+from configs.security import *
+from http.cookies import SimpleCookie
+
 
 main_app = FastAPI()
 main_app.include_router(api_router)
@@ -28,6 +31,5 @@ main_app.add_middleware(
 
 @main_app.get("/")
 async def main(request: Request):
-    r = dict(request)
-    print(r["headers"][0][1].decode())
+    req = convert_binary_to_string(request)
     return "Hello. Welcome to Code Planet"

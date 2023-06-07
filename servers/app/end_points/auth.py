@@ -19,6 +19,7 @@ from email.mime.text import MIMEText
 from smtplib import SMTP
 from configs.security import *
 import pymongo
+from http.cookies import SimpleCookie
 
 router = APIRouter()
 
@@ -27,6 +28,7 @@ async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
                  ):
+    request = convert_binary_to_string(request)
     user = await get_user(db,form_data.username)
     if not user :
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
@@ -51,13 +53,35 @@ async def login (request : Request,
     }
     )
     response.set_cookie(key = "refresh_token",value = refresh_token,httponly = True)
-    print(response.headers)
+    await insert_login_history(db = db ,data = data , token = access_token,request = request)
     return response
 
+@router.post("/logout",status_code = status.HTTP_200_OK)
+async def logout(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header(),):
+    request = convert_binary_to_string(request)
+    cookies = parse_cookie(request)
+    # refresh token 있는지 check
+    if not cookies.get("refresh_token"):
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
+                            detail = "Invalid Token"
+            )
+    # access_token 
+    if not access_token :
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
+                    detail = "Invalid Token"
+        )
+    # JWT_TOKEN 자동으로 raise error
+    decoded_jwt = decode_jwt_token(token = access_token)
+    response = JSONResponse(content = None)
+    response.set_cookie(key = "refresh_token",value = None,httponly = True)
+    await insert_logout_history(db = db,decoded_jwt = decoded_jwt,token = access_token,request = request)
+    # access token 유효한지 check
+    return response
 
 
 @router.post("/sign-up",response_model = UserData,status_code = status.HTTP_201_CREATED)
 async def create_user(request:Request,user :User,token : Encode_Token,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    request = convert_binary_to_string(request)
     user = dict(user)
     encode_token = token.token
     current_user = await get_user(db,user["user_id"])
@@ -109,8 +133,9 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
 @router.post("/accessToken")
 async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),],refresh_token: str = Header()):
     try :
-        print(request)
+        request = convert_binary_to_string(request)
         decoded_refresh_token = decode_jwt_token(refresh_token)
+
         # 만료 체크 
         if not decoded_refresh_token :
             raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")

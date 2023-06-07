@@ -11,6 +11,7 @@ from passlib.context import CryptContext
 from models.crud import *
 import pymongo
 import time
+from http.cookies import SimpleCookie
 pwd_context = CryptContext(schemes=["bcrypt"],deprecated = "auto")
 
 def encode_access_token(request:Request,data: dict, expires_delta: Union[timedelta, None] = None):
@@ -23,7 +24,7 @@ def encode_access_token(request:Request,data: dict, expires_delta: Union[timedel
     r = dict(request)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
-    to_encode.update({"client_ip":r["headers"][0][1].decode()})
+    to_encode.update({"client_ip":r["headers"]["x-real-ip"] if r["headers"].get("x-real-ip") else r["client"][0]})
     print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
@@ -32,10 +33,9 @@ def encode_refresh_token(request:Request,data:dict):
     to_encode = data.copy()
     current_time = datetime.utcnow()
     expire_time = current_time + timedelta(days = int(REFRESH_TOKEN_EXPIRE_DAY))
-    r = dict(request)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
-    to_encode.update({"client_ip":r["headers"][0][1].decode()})
+    to_encode.update({"client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
     print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
@@ -58,8 +58,6 @@ def encode_jwt_token(data):
 
 def decode_jwt_token(token : str):
     decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
-    if decoded_jwt["exp"] < time.time():
-        return None
     return decoded_jwt
 
 def verify_client_ip(decoded_token,request:Request):
@@ -95,3 +93,17 @@ def verify_password(plain_password,hashed_password):
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
                             detail = "Invalid password"
                             )
+
+def convert_binary_to_string(request:Request):
+    req = dict(request)
+    req["headers"] = list(map(lambda x:list(x),req["headers"]))
+    req["headers"] = dict(map(lambda x: list(map(lambda y:y.decode(),x)),req["headers"]))
+    return req 
+
+def parse_cookie(request):
+    if not request["headers"].get("cookie"):
+        return dict()
+    cookie = SimpleCookie()
+    cookie.load(request["headers"]["cookie"])
+    cookies = {key: value.value  for key, value in cookie.items()}
+    return cookies 
