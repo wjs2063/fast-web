@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.post("/token",status_code = status.HTTP_200_OK)
 async def account_token(request : Request,user_id : str ,password : Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    request = convert_binary_to_string(request)
     password = password.password
     query = {"user_id":user_id}
     user_info = await find_one(db,query)
@@ -29,6 +30,7 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
 @router.post("/reset_password",status_code = status.HTTP_200_OK)
 async def reset_password(request:Request,token : str,password : Password,
                          db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    request = convert_binary_to_string(request)
     decoded_token = decode_jwt_token(token)
     query = {
         "user_id":decoded_token.get("user_id")

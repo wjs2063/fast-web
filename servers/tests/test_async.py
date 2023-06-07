@@ -134,6 +134,23 @@ async def test_account_token():
                                  )
     assert response.status_code == status.HTTP_200_OK
 
+@pytest.mark.asyncio
+async def test_logout():
+    async with AsyncClient(app = main_app,base_url = base_url)  as ac:
+        login_response = await ac.post("/api/auth/login",
+            headers = {'Content-Type':  'application/x-www-form-urlencoded',},
+            content = 'grant_type=&username=aaa1234&password=1234567&scope=&client_id=&client_secret='
+             )
+    access_token = login_response.json()["token"]["token"]  
+    assert login_response.status_code == status.HTTP_200_OK
+    async with AsyncClient(app = main_app,base_url = base_url)  as ac:
+            logout_response = await ac.post("/api/auth/logout",
+                                            headers = {
+                                                "access-token":" eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWFhMTIzNCIsInRva2VuX3R5cGUiOiJsb2dpbiIsImlhdCI6MTY4NjE0NzM1NCwiZXhwIjoxNjg2MTQ5MTU0LCJjbGllbnRfaXAiOiI1OS4xOC4yNDMuMTY2In0.176u2h2-QHJDLdWzZdbjucPYwwiZouGqPp0FzBgMiP4" 
+                                            },
+                                            json = {}
+                                            )
+    assert logout_response.status_code == status.HTTP_401_UNAUTHORIZED
 
 @pytest.mark.asyncio
 async def test_reset_password():
@@ -154,6 +171,10 @@ async def test_reset_password():
                                  )
         
     assert response.status_code == status.HTTP_200_OK
+
+
+
+    
 
 @pytest.mark.asyncio
 async def test_generate_access_token():
