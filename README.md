@@ -2,6 +2,9 @@
 fastapi web project
 
 
+블로그 : [https://blog.naver.com/jahy5352 ](https://blog.naver.com/jahy5352/223123014222)
+
+
 기술스택 : GCP,Centos:7,Docker,Nginx, FastAPI, Mongodb, Python 
 
 
