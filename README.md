@@ -30,9 +30,13 @@ Motor library로 비동기로 작성. 최대한 fastAPI 아키텍쳐 특성을 �
 
 ## Sequence Diagram
 
-<img width="806" alt="image" src="https://github.com/wjs2063/fast-web/assets/76778082/cd4730d4-63b3-44db-86d1-3eb5d523ff3a">
+<img width="500" alt="image" src="https://github.com/wjs2063/fast-web/assets/76778082/cd4730d4-63b3-44db-86d1-3eb5d523ff3a">
 
 
+
+## Login Logout Table 
+
+<img width="526" alt="image" src="https://github.com/wjs2063/fast-web/assets/76778082/6a18d227-9858-4d96-952a-a56fb0cf792a">
 
 
 
