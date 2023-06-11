@@ -42,17 +42,18 @@ async def login (request : Request,
         "user_id" : user["user_id"],
         "token_type" : "login"
     }
-    refresh_token = await get_refresh_token(db,request = request,data = data,user_id = user["user_id"])
+    refresh_token = await get_refresh_token(db,request = request,data = data)
     access_token = encode_access_token(request = request,
         data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
     )
     token = Encode_Token(token = access_token)
+
     response = JSONResponse(
     content = {
         "token":jsonable_encoder(token)
     }
     )
-    response.set_cookie(key = "refresh_token",value = refresh_token,httponly = True)
+    response.set_cookie(key = "refresh_token",value = refresh_token,httponly = True,expires = 1200,max_age = 1200,samesite = "none",secure = True)
     await insert_login_history(db = db ,data = data , token = access_token,request = request)
     return response
 
@@ -84,9 +85,14 @@ async def create_user(request:Request,user :User,token : Encode_Token,db: Annota
     request = convert_binary_to_string(request)
     user = dict(user)
     encode_token = token.token
-    current_user = await get_user(db,user["user_id"])
+    current_user = await get_user(db,{"user_id":user["user_id"]})
     if current_user :
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원 입니다.")
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 아이디 입니다.")
+    if await find_one(db,{"email":user["email"]}):
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일 입니다.")
+    if await find_one(db,{"nickname":user["nickname"]}):
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 닉네임 입니다.")
+
     decoded_jwt = decode_jwt_token(token = encode_token)
     #verify_client_ip(decoded_jwt,request)
     verify_email(decoded_jwt,user["email"])
@@ -114,44 +120,38 @@ async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[mot
 
 @router.get("/register/validation",status_code = status.HTTP_200_OK)
 async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
-    try :
-        decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
-        if decoded_jwt.get("token_type") != "email":
-            HTTPException(status_code = status.HTTP_404_NOT_FOUND)
-        
-        query = {
-            "email" :decoded_jwt.get("email")
-        }
-        user = await find_one(db,query)
+    decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+    if decoded_jwt.get("token_type") != "email":
+        HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+    
+    query = {
+        "email" :decoded_jwt.get("email")
+    }
+    user = await find_one(db,query)
 
-        if user:
-            HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
-        return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
-    except Exception as e :
-        raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,detail = str(e))
+    if user:
+        HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
+    return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
 
 @router.post("/accessToken")
 async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),],refresh_token: str = Header()):
-    try :
-        request = convert_binary_to_string(request)
-        decoded_refresh_token = decode_jwt_token(refresh_token)
+    request = convert_binary_to_string(request)
+    decoded_refresh_token = decode_jwt_token(refresh_token)
 
-        # 만료 체크 
-        if not decoded_refresh_token :
-            raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
-        user_id = decoded_refresh_token.get("user_id")
-        data = {
-        "user_id" : user_id,
-        "token_type" : "login"
-        }
-        access_token = encode_access_token(request = request,
-        data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
-        )
-        token = Encode_Token(token = access_token)
-        return JSONResponse(
-        content = {
-            "token":jsonable_encoder(token)
-        }
-        )
-    except Exception as e :
-        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = str(e))
+    # 만료 체크 
+    if not decoded_refresh_token :
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
+    user_id = decoded_refresh_token.get("user_id")
+    data = {
+    "user_id" : user_id,
+    "token_type" : "login"
+    }
+    access_token = encode_access_token(request = request,
+    data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    token = Encode_Token(token = access_token)
+    return JSONResponse(
+    content = {
+        "token":jsonable_encoder(token)
+    }
+    )

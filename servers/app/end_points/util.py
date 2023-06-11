@@ -26,8 +26,9 @@ router = APIRouter()
 
 @router.post("/register/email")
 async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
+    request = convert_binary_to_string(request)
     data = {
-        "client_ip" : request.client.host,
+        "client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0],
         "email" : email.dict().get("email"),
         "token_type" : "email"
     }

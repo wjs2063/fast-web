@@ -47,7 +47,7 @@ async def test_create_user():
                     "name": "jaehyeon",
                     "user_id": "aaa1234",
                     "email": "jahy5352@naver.com",
-                    "gender": "남성",
+                    "gender": "남자",
                     "password": "1234567",
                     "nickname": "user1",
                     "birth_year": 1900,
