@@ -10,15 +10,9 @@ from http.cookies import SimpleCookie
 
 main_app = FastAPI()
 main_app.include_router(api_router)
-origins = {
-    os.environ['ALLOW_ORIGIN_1'],
-    os.environ['ALLOW_ORIGIN_2'],
-    os.environ["ALLOW_ORIGIN_3"],
-}
-
-main_app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts = origins
-)
+origins = [
+    "http://localhost:3000",
+]
 
 main_app.add_middleware(
     CORSMiddleware,

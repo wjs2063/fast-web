@@ -10,9 +10,9 @@ from passlib.context import CryptContext
 from enum import Enum
 # instance
 
-class Gender(str,Enum):
-    남성 : "남성"
-    여성 : "여성"
+class GenderEnum(str,Enum):
+    남자 = "남자"
+    여자 = "여자"
 
 class User(CamelModel):
     name : str = Field(min_length = 2,max_length = 15)
@@ -20,7 +20,7 @@ class User(CamelModel):
     email : EmailStr = Field(default = None)
     password :str = Field(min_length = 7,max_length = 15)
     nickname : str = Field(min_length = 2,max_length = 15)
-    gender : str
+    gender : GenderEnum
     birth_year : int = Field(ge = 1900,le = date.today().year)
     birth_month : int = Field(ge = 1,le = 12)
     birth_day : int = Field(ge = 1, le = 31)
@@ -33,7 +33,7 @@ class User(CamelModel):
                 "name":"jaehyeon",
                 "user_id":"aaa1234",
                 "email":"kkk@naver.com",
-                "gender" :"남성",
+                "gender" :"남자",
                 "password":"1234567",
                 "nickname":"user1",
                 "birth_year" :1900,
@@ -74,8 +74,8 @@ def set_datetime(data):
     data["create_time"] = datetime.utcnow()
     data["update_time"] = datetime.utcnow()
 
-async def get_user(db,user_id):
-    data = await db.users.find_one({"user_id":user_id})
+async def get_user(db,query):
+    data = await db.users.find_one(query)
     if not data :
         return None
     return  dict(data)

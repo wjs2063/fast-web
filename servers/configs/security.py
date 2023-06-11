@@ -21,10 +21,9 @@ def encode_access_token(request:Request,data: dict, expires_delta: Union[timedel
         expire_time = current_time + timedelta(minutes = int(expires_delta))
     else:
         expire_time = current_time + timedelta(minutes = 15)
-    r = dict(request)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
-    to_encode.update({"client_ip":r["headers"]["x-real-ip"] if r["headers"].get("x-real-ip") else r["client"][0]})
+    to_encode.update({"client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
     print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
@@ -36,47 +35,59 @@ def encode_refresh_token(request:Request,data:dict):
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
     to_encode.update({"client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
-    print(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
 
-async def get_refresh_token(db,request,data:dict,user_id):
-    refresh_token = await db.token.find({"user_id": user_id}).sort([("created_at",pymongo.DESCENDING)]).limit(1).to_list(length = 1)
-    if not refresh_token:
+async def get_refresh_token(db,request : Request,data:dict):
+    # 최근에 발급받은 refresh_token 을 발급받는다
+    docs = await db.token.find({"user_id": data["user_id"]}).sort([("created_at",pymongo.DESCENDING)]).limit(1).to_list(length = 1)
+    # 최근에 발급받은 refresh_token 이 expire 됐으면 ?
+    # 없거나 만료됐으면 만들자
+    if not docs or datetime.utcnow() - docs[0]["created_at"] > timedelta(days = int(REFRESH_TOKEN_EXPIRE_DAY)):
         query  = {
-            "user_id": user_id,
-            "refresh_token" : encode_refresh_token(request = request,data = data),
-            "created_at":datetime.utcnow()
+            "user_id": data["user_id"],
+            "created_at":datetime.utcnow(),
+            "refresh_token" : encode_refresh_token(request = request,data = data)
             }
         await db.token.insert_one(query)
-        refresh_token = [query]
-    refresh_token = refresh_token[0]["refresh_token"]
-    return refresh_token
+        docs = [query]
+    doc = docs[0]
+    return doc["refresh_token"]
 
 def encode_jwt_token(data):
     return jwt.encode(data, SECRETKEY, algorithm =  ALGORITHM)
 
 def decode_jwt_token(token : str):
-    decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
-    return decoded_jwt
+    try :
+        decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
+        return decoded_jwt
+    
+    except jwt.ExpiredSignature:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,deatil = "Invalid Token")
+    
+    except Exception as e :
+        raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,detail = str(e))
+
+async def get_by_email(db,email):
+    return await db.user.find_one({"email":email})
 
 def verify_client_ip(decoded_token,request:Request):
     if decoded_token.get("client_ip") != request.client.host :
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "invalid Token !")
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "Invalid Token !")
 
 def verify_token_type(decoded_token,token_type:str):
     if decoded_token.get("token_type") != token_type:
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "invalid Token !")
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "Invalid Token !")
 
 
 def verify_user_id(decoded_token,user_id):
     if decoded_token.get("user_id") != user_id:
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "invalid Token !")
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "Invalid Token !")
 
 
 def verify_email(decoded_token,email):
     if decoded_token.get("email") != email:
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "invalid Token !")
+        raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "Invalid Token !")
     
 
 async def get_user(db,user_id):
@@ -107,3 +118,6 @@ def parse_cookie(request):
     cookie.load(request["headers"]["cookie"])
     cookies = {key: value.value  for key, value in cookie.items()}
     return cookies 
+
+
+

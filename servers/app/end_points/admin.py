@@ -14,7 +14,7 @@ from bson import ObjectId
 
 router = APIRouter()
 
-@router.post("/database/reset",status_code = status.HTTP_200_OK)
+@router.post("/database/user/reset",status_code = status.HTTP_200_OK)
 async def database_reset(password:Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     password = password.password 
     if password != "admin123":
@@ -23,3 +23,26 @@ async def database_reset(password:Password,db: Annotated[motor_asyncio.AsyncIOMo
     return 
 
 
+@router.post("/database/token/reset",status_code = status.HTTP_200_OK)
+async def database_reset(password:Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    password = password.password 
+    if password != "admin123":
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+    await db.token.drop()
+    return 
+
+@router.post("/database/login/reset",status_code = status.HTTP_200_OK)
+async def database_reset(password:Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    password = password.password 
+    if password != "admin123":
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+    await db.login.drop()
+    return 
+
+@router.post("/database/logout/reset",status_code = status.HTTP_200_OK)
+async def database_reset(password:Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
+    password = password.password 
+    if password != "admin123":
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+    await db.logout.drop()
+    return 
