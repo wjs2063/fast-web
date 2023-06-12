@@ -29,10 +29,10 @@ async def get_question_list(db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depe
 
 # user_id 의 질문 등록 
 @router.post("/question/{user_id}")
-async def post_question(user_id,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
+async def post_question(user_id,question,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     decoded_access_jwt = decode_jwt_token(access_token)
     # 로그인용 토큰 check
-    verify_token_type(decoded_token = decoded_access_jwt,token_type = "login")
+    verify_usage(decoded_token = decoded_access_jwt,usage = "login")
     # user_id check
     verify_user_id(decoded_token = decoded_access_jwt,user_id = user_id)
     req = dict(request)
