@@ -18,6 +18,7 @@ env:
   ALLOW_ORIGIN_1 : $ {{secrets.ALLOW_ORIGIN_1}}
   ALLOW_ORIGIN_2 : $ {{secrets.ALLOW_ORIGIN_2}}
   ALLOW_ORIGIN_3 : $ {{secrets.ALLOW_ORIGIN_3}}
+  ADMIN_PASSWORD : ${{secrets.ADMIN_PASSWORD}}
   
 jobs:
   build:
