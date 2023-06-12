@@ -35,7 +35,7 @@ async def login (request : Request,
                             detail = "user is not exist",
                             #headers={"WWW-Authenticate": "Bearer"},
                             )
-    verify_password(form_data.password,user["password"])
+    verify_password(form_data.password,user[PASSWORD])
 
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
@@ -62,7 +62,7 @@ async def logout(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient 
     request = convert_binary_to_string(request)
     cookies = parse_cookie(request)
     # refresh token 있는지 check
-    if not cookies.get("refresh_token"):
+    if not cookies.get(REFRESH_TOKEN):
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,
                             detail = "Invalid Token"
             )
