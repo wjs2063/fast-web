@@ -28,9 +28,9 @@ router = APIRouter()
 async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
     request = convert_binary_to_string(request)
     data = {
-        "client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0],
-        "email" : email.dict().get("email"),
-        "token_type" : "email"
+        CLIENT_IP:request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0],
+        EMAIL : email.dict().get(EMAIL),
+        USAGE : EMAIL
     }
     encoded_jwt_token = encode_access_token(request = request,data = data,expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES)
     html = f"""<p>Hi this CODE PLANET test mail, thanks for using CODE PLANET <br></br>
@@ -38,8 +38,8 @@ async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
         
     </p> """
     message = MessageSchema(
-        subject = "Fastapi-Mail module",
-        recipients = [email.dict().get("email")],
+        subject = "CODE PLANET VERFICATION MAIL",
+        recipients = [email.dict().get(EMAIL)],
         body = html,
         subtype = MessageType.html)
 

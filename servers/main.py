@@ -12,6 +12,7 @@ main_app = FastAPI()
 main_app.include_router(api_router)
 origins = [
     "http://localhost:3000",
+    "https://localhost:3000"
 ]
 
 main_app.add_middleware(
@@ -26,4 +27,5 @@ main_app.add_middleware(
 @main_app.get("/")
 async def main(request: Request):
     req = convert_binary_to_string(request)
+    print(req)
     return "Hello. Welcome to Code Planet"

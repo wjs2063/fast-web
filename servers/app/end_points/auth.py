@@ -39,8 +39,8 @@ async def login (request : Request,
 
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
-        "user_id" : user["user_id"],
-        "token_type" : "login"
+        USER_ID : user[USER_ID],
+        USAGE : LOGIN
     }
     refresh_token = await get_refresh_token(db,request = request,data = data)
     access_token = encode_access_token(request = request,
@@ -50,10 +50,10 @@ async def login (request : Request,
 
     response = JSONResponse(
     content = {
-        "token":jsonable_encoder(token)
+        TOKEN:jsonable_encoder(token)
     }
     )
-    response.set_cookie(key = "refresh_token",value = refresh_token,httponly = True,expires = 1200,max_age = 1200,samesite = "none",secure = True)
+    response.set_cookie(key = REFRESH_TOKEN,value = refresh_token,httponly = True,expires = 1200,max_age = 1200,samesite = "none",secure = True)
     await insert_login_history(db = db ,data = data , token = access_token,request = request)
     return response
 
@@ -74,7 +74,7 @@ async def logout(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient 
     # JWT_TOKEN 자동으로 raise error
     decoded_jwt = decode_jwt_token(token = access_token)
     response = JSONResponse(content = None)
-    response.set_cookie(key = "refresh_token",value = None,httponly = True)
+    response.set_cookie(key = REFRESH_TOKEN,value = None,httponly = True)
     await insert_logout_history(db = db,decoded_jwt = decoded_jwt,token = access_token,request = request)
     # access token 유효한지 check
     return response
@@ -85,18 +85,18 @@ async def create_user(request:Request,user :User,token : Encode_Token,db: Annota
     request = convert_binary_to_string(request)
     user = dict(user)
     encode_token = token.token
-    current_user = await get_user(db,{"user_id":user["user_id"]})
+    current_user = await get_user(db,{USER_ID:user[USER_ID]})
     if current_user :
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 아이디 입니다.")
-    if await find_one(db,{"email":user["email"]}):
+    if await find_one(db,{EMAIL:user[EMAIL]}):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일 입니다.")
-    if await find_one(db,{"nickname":user["nickname"]}):
+    if await find_one(db,{NICKNAME:user[NICKNAME]}):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 닉네임 입니다.")
 
     decoded_jwt = decode_jwt_token(token = encode_token)
     #verify_client_ip(decoded_jwt,request)
-    verify_email(decoded_jwt,user["email"])
-    user["password"] = pwd_context.hash(user["password"])
+    verify_email(decoded_jwt,user[EMAIL])
+    user[PASSWORD] = pwd_context.hash(user[PASSWORD])
     set_datetime(user)
     _id = await insert_one(db,user)
     return user
@@ -110,7 +110,7 @@ async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClien
 
 @router.get("/email",status_code = status.HTTP_200_OK)
 async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
-    query = {"email":email_str}
+    query = {EMAIL:email_str}
     current_user = await find_one(db,query)
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 가입한 이메일 입니다.")
@@ -121,11 +121,11 @@ async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[mot
 @router.get("/register/validation",status_code = status.HTTP_200_OK)
 async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
-    if decoded_jwt.get("token_type") != "email":
+    if decoded_jwt.get(USAGE) != EMAIL:
         HTTPException(status_code = status.HTTP_404_NOT_FOUND)
     
     query = {
-        "email" :decoded_jwt.get("email")
+        EMAIL :decoded_jwt.get(EMAIL)
     }
     user = await find_one(db,query)
 
@@ -133,18 +133,22 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
         HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
     return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
 
-@router.post("/accessToken")
-async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),],refresh_token: str = Header()):
+@router.post("/accessToken",status_code = status.HTTP_200_OK )
+async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),]):
     request = convert_binary_to_string(request)
+    cookies = parse_cookie(request)
+    refresh_token = cookies.get(REFRESH_TOKEN)
+    if not refresh_token or refresh_token == "None":
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Login Required")
     decoded_refresh_token = decode_jwt_token(refresh_token)
 
     # 만료 체크 
     if not decoded_refresh_token :
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "invalid token")
-    user_id = decoded_refresh_token.get("user_id")
+    user_id = decoded_refresh_token.get(USER_ID)
     data = {
-    "user_id" : user_id,
-    "token_type" : "login"
+    USER_ID : user_id,
+    USAGE : LOGIN
     }
     access_token = encode_access_token(request = request,
     data = data, expires_delta = ACCESS_TOKEN_EXPIRE_MINUTES
@@ -152,6 +156,6 @@ async def generate_access_token(request:Request,db: Annotated[motor_asyncio.Asyn
     token = Encode_Token(token = access_token)
     return JSONResponse(
     content = {
-        "token":jsonable_encoder(token)
+        TOKEN:jsonable_encoder(token)
     }
     )

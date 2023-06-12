@@ -13,15 +13,15 @@ router = APIRouter()
 async def account_token(request : Request,user_id : str ,password : Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     request = convert_binary_to_string(request)
     password = password.password
-    query = {"user_id":user_id}
+    query = {USER_ID:user_id}
     user_info = await find_one(db,query)
     if not user_info:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
     user_info = dict(user_info) 
-    verify_password(password,user_info["password"])
+    verify_password(password,user_info[PASSWORD])
     data = {
-        "user_id" : user_id,
-        "token_type" : "account",
+        USER_ID : user_id,
+        USAGE : ACCOUNT,
     }
     account_token = encode_access_token(request = request,data = data)
     return account_token
@@ -33,17 +33,17 @@ async def reset_password(request:Request,token : str,password : Password,
     request = convert_binary_to_string(request)
     decoded_token = decode_jwt_token(token)
     query = {
-        "user_id":decoded_token.get("user_id")
+        USER_ID:decoded_token.get(USER_ID)
         }
     user = await find_one(db,query)
     #verify_client_ip(decoded_token = decoded_token,request = request)
-    verify_token_type(decoded_token = decoded_token,token_type = "account")
+    verify_usage(decoded_token = decoded_token,usage = ACCOUNT)
     password = password.password 
     find_query = {
-        "user_id" : decoded_token.get("user_id")
+        USER_ID : decoded_token.get(USER_ID)
     }
     modify_query = {
-        "password" : pwd_context.hash(password)
+        PASSWORD : pwd_context.hash(password)
     }
     result = await find_one_and_update(db,find_query,modify_query)
     return 

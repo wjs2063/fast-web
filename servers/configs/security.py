@@ -23,8 +23,7 @@ def encode_access_token(request:Request,data: dict, expires_delta: Union[timedel
         expire_time = current_time + timedelta(minutes = 15)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
-    to_encode.update({"client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
-    print(to_encode)
+    to_encode.update({CLIENT_IP:request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
 
@@ -34,25 +33,25 @@ def encode_refresh_token(request:Request,data:dict):
     expire_time = current_time + timedelta(days = int(REFRESH_TOKEN_EXPIRE_DAY))
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
-    to_encode.update({"client_ip":request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
+    to_encode.update({CLIENT_IP:request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
     encoded_jwt = jwt.encode(to_encode, SECRETKEY, algorithm =  ALGORITHM)
     return encoded_jwt
 
 async def get_refresh_token(db,request : Request,data:dict):
     # 최근에 발급받은 refresh_token 을 발급받는다
-    docs = await db.token.find({"user_id": data["user_id"]}).sort([("created_at",pymongo.DESCENDING)]).limit(1).to_list(length = 1)
+    docs = await db.token.find({USER_ID: data[USER_ID]}).sort([(CREATED_AT,pymongo.DESCENDING)]).limit(1).to_list(length = 1)
     # 최근에 발급받은 refresh_token 이 expire 됐으면 ?
     # 없거나 만료됐으면 만들자
-    if not docs or datetime.utcnow() - docs[0]["created_at"] > timedelta(days = int(REFRESH_TOKEN_EXPIRE_DAY)):
+    if not docs or datetime.utcnow() - docs[0][CREATED_AT] > timedelta(days = int(REFRESH_TOKEN_EXPIRE_DAY)):
         query  = {
-            "user_id": data["user_id"],
-            "created_at":datetime.utcnow(),
-            "refresh_token" : encode_refresh_token(request = request,data = data)
+            USER_ID: data[USER_ID],
+            CREATED_AT:datetime.utcnow(),
+            REFRESH_TOKEN : encode_refresh_token(request = request,data = data)
             }
         await db.token.insert_one(query)
         docs = [query]
     doc = docs[0]
-    return doc["refresh_token"]
+    return doc[REFRESH_TOKEN]
 
 def encode_jwt_token(data):
     return jwt.encode(data, SECRETKEY, algorithm =  ALGORITHM)
@@ -69,30 +68,30 @@ def decode_jwt_token(token : str):
         raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,detail = str(e))
 
 async def get_by_email(db,email):
-    return await db.user.find_one({"email":email})
+    return await db.user.find_one({EMAIL:email})
 
 def verify_client_ip(decoded_token,request:Request):
-    if decoded_token.get("client_ip") != request.client.host :
+    if decoded_token.get(CLIENT_IP) != request.client.host :
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "Invalid Token !")
 
-def verify_token_type(decoded_token,token_type:str):
-    if decoded_token.get("token_type") != token_type:
+def verify_usage(decoded_token,usage:str):
+    if decoded_token.get(USAGE) != usage:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "Invalid Token !")
 
 
 def verify_user_id(decoded_token,user_id):
-    if decoded_token.get("user_id") != user_id:
+    if decoded_token.get(USER_ID) != user_id:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "Invalid Token !")
 
 
 def verify_email(decoded_token,email):
-    if decoded_token.get("email") != email:
+    if decoded_token.get(EMAIL) != email:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "Invalid Token !")
     
 
 async def get_user(db,user_id):
     query = {
-        "user_id" : user_id
+        USER_ID : user_id
     }
     data = await find_one(db,query)
     if not data :

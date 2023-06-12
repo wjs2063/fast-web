@@ -30,8 +30,28 @@ OWN_EMAIL_PASSWORD = os.environ["OWN_EMAIL_PASSWORD"]
 REFRESH_TOKEN_EXPIRE_DAY = os.environ["REFRESH_TOKEN_EXPIRE_DAY"]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
 
+# TOKEN 
+TOKEN = "token"
+REFRESH_TOKEN = "refresh_token"
+ACCESS_TOKEN = "access_token"
 
+# LOGIN, LOGOUT
+LOGIN = "login"
+LOGIN_TIME = "login_time"
+LOGOUT_TIME = "logout_time"
+
+USAGE = "usage"
+USER_ID = "user_id"
+
+EMAIL = "email"
+PASSWORD = "password"
+NICKNAME = "nickname"
+ACCOUNT = "account"
+DEVICE = "device"
+CLIENT_IP = "client_ip"
+CREATED_AT = "created_at"
 
 
 
