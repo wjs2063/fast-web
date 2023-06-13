@@ -43,13 +43,10 @@ Locust : Gunicorn worker 4 로 측정
 
 
 
-## Login Logout Table 
-
-<img width="500" alt="image" src="https://github.com/wjs2063/fast-web/assets/76778082/6a18d227-9858-4d96-952a-a56fb0cf792a">
-
+## Database Schema
+![image](https://github.com/wjs2063/fast-web/assets/76778082/aee5cdf9-2ed3-41fe-822a-95bf6e33bc8c)
 
 
-## User Table
 
-<img width="500" alt="image" src="https://github.com/wjs2063/fast-web/assets/76778082/3de3335a-ae68-4ac1-9375-ff3b5e3d12fb">
+
 
