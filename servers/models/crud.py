@@ -9,9 +9,17 @@ async def insert_one(db,collection,query):
     return _id
 
 async def find_one(db,collection,query):
-    result = await db[collection].find_one(query)
-    return result 
+    return await db[collection].find_one(query)
 
+async def find_many(db,collection, query):
+    return await db[collection].find(query)
+
+async def find_many_with_pagination(db,collection,query,page = 1,limit = DEFAULT_LIMIT):
+    offset = (page - 1) * limit
+    return await db[collection].find(query).skip(offset).limit(limit).to_list(length = DEFAULT_LIMIT)
+
+async def count_total_documents(db,collection,query):
+    return await db[collection].count_documents(query)
 
 async def find_one_and_update(db,collection,find_query,modify_query):
     result = await db[collection].find_one_and_update(
@@ -42,3 +50,10 @@ async def insert_logout_history(db,collection,decoded_jwt, token : str ,request 
         DEVICE : request["headers"]["user-agent"]
     }
     return await insert_one(db ,collection ,docs)
+
+from typing import List
+def serealize(docs : List[dict] ):
+    for i,v in enumerate(docs):
+        v["_id"] = str(v["_id"])
+        docs[i] = v 
+    return docs 

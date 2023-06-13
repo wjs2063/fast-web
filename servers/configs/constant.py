@@ -56,6 +56,13 @@ NICKNAME = "nickname"
 ACCOUNT = "account"
 
 OBJECT_ID = "objectId"
+ID = "_id"
 
 
 
+
+DEFAULT_LIMIT = 10
+QUESTIONS = "questions"
+ANSWERS = "answers"
+COMMENTS = "comments"
+TOTAL_DOCS = "total_docs"
