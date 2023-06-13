@@ -19,6 +19,8 @@ env:
   ALLOW_ORIGIN_2 : $ {{secrets.ALLOW_ORIGIN_2}}
   ALLOW_ORIGIN_3 : $ {{secrets.ALLOW_ORIGIN_3}}
   ADMIN_PASSWORD : ${{secrets.ADMIN_PASSWORD}}
+  GCP_PUBLIC_ADDRESS : ${{secrets.GCP_PUBLIC_ADDRESS}}
+  TEST_ADDRESS : ${{secrets.TEST_ADDRESS}}
   
 jobs:
   build:
