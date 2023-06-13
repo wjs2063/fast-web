@@ -8,13 +8,14 @@ load_dotenv()
 #
 
 # for CI 
-IP_ADDRESS = "59.18.243.166"
+GCP_PUBLIC_ADDRESS = os.environ["GCP_PUBLIC_ADDRESS"]
+TEST_ADDRESS = os.environ["TEST_ADDRESS"]
 WIFI_ADDRESS = "172.30.1.56"
 
 # for local
 
-PUBLIC_MONGODB = f"mongodb://{IP_ADDRESS}:54555/test"
-PUBLIC_TEST = f"mongodb://{IP_ADDRESS}:54254/test"
+PUBLIC_MONGODB = f"mongodb://{GCP_PUBLIC_ADDRESS}:27017/test"
+PUBLIC_TEST = f"mongodb://{TEST_ADDRESS}:54254/test"
 
 
 PRIVATE_MONGODB = f"mongodb://{WIFI_ADDRESS}:54555/test"
@@ -37,10 +38,14 @@ TOKEN = "token"
 REFRESH_TOKEN = "refresh_token"
 ACCESS_TOKEN = "access_token"
 
-# LOGIN, LOGOUT
+# LOGIN, LOGOUT DATABASE
 LOGIN = "login"
 LOGIN_TIME = "login_time"
 LOGOUT_TIME = "logout_time"
+DEVICE = "device"
+CLIENT_IP = "client_ip"
+CREATED_AT = "created_at"
+UPDATED_AT = "updated_at"
 
 USAGE = "usage"
 USER_ID = "user_id"
@@ -49,11 +54,8 @@ EMAIL = "email"
 PASSWORD = "password"
 NICKNAME = "nickname"
 ACCOUNT = "account"
-DEVICE = "device"
-CLIENT_IP = "client_ip"
-CREATED_AT = "created_at"
 
-
+OBJECT_ID = "objectId"
 
 
 

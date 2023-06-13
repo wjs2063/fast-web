@@ -14,7 +14,7 @@ This is a async Test File
 
 
 
-base_url = "http://34.64.212.38"
+base_url = "https://www.codeplanet.site"
 
 
 async def override_async_db():
@@ -170,7 +170,7 @@ async def test_reset_password():
                                  }
                                  )
         
-    assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK
 
 
 
@@ -185,23 +185,48 @@ async def test_generate_access_token():
 async def test_database_reset():
     pass 
 
-
-
-"""
 @pytest.mark.asyncio
-async def test_simple_send():
+async def test_get_question_list():
+    pass 
 
+
+@pytest.mark.asyncio
+async def test_post_question():
     async with AsyncClient(app = main_app,base_url = base_url) as ac:
-        response = await ac.post("/api/util/register/email?user_id=aaa1234",
+        login_response = await ac.post("/api/auth/login",
                                  headers = {
-                                     "accept": "application/json",
-                                     "Content-Type" : "application/json"
-                                    },
-                                 json = {
-                                     "email": "jahy5352@naver.com"
-                                 }
+                                    'accept': 'application/json',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
 
+                                 },
+                                content = 
+                                    'grant_type=&username=aaa1234&password=234567&scope=&client_id=&client_secret='
+                                
                                  )
-    assert response.status_code == status.HTTP_200_OK
+        assert login_response.status_code == status.HTTP_200_OK
+        access_token = login_response.json()["token"]["token"]
+        question_post_response = await ac.post("/api/user/question",
+                                         headers = {
+                                             "access-token":access_token
+                                         },
+                                         json = {
+                                            "user_id": "aaa1234",
+                                            "nickname": "test_nick",
+                                            "subject": "DFS/BFS Base Code",
+                                            "content": "DFS란말이죠?",
+                                            "category": "DFS/BFS",
+                                            "language": "python",
+                                            "is_completed": False
+                                            }
+                                         )
+        assert question_post_response.status_code == status.HTTP_201_CREATED
 
-"""
+
+
+@pytest.mark.asyncio
+async def test_update_question():
+    pass
+
+@pytest.mark.asyncio
+async def test_delete_question():
+    pass

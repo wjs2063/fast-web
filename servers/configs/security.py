@@ -3,6 +3,7 @@ from datetime import datetime,timedelta,date
 from fastapi import *
 from configs.constant import *
 from jose import JWTError, jwt
+import jose
 from fastapi_camelcase import CamelModel
 from bson import ObjectId
 from typing import *
@@ -61,8 +62,8 @@ def decode_jwt_token(token : str):
         decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
         return decoded_jwt
     
-    except jwt.ExpiredSignature:
-        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,deatil = "Invalid Token")
+    except jose.exceptions.ExpiredSignatureError:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,detail = "Invalid Token")
     
     except Exception as e :
         raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,detail = str(e))
@@ -93,7 +94,7 @@ async def get_user(db,user_id):
     query = {
         USER_ID : user_id
     }
-    data = await find_one(db,query)
+    data = await find_one(db = db,collection = "users",query = query)
     if not data :
         return None
     return  dict(data)
@@ -119,4 +120,16 @@ def parse_cookie(request):
     return cookies 
 
 
-
+def verfiy_token(req : Request,access_token ):
+    cookies = parse_cookie(req)
+    # refresh_token 이없으면 login_required 
+    refresh_token = cookies.get(REFRESH_TOKEN)
+    # 토큰이없거나(로그인필요) None 이면 로그아웃했으므로 Error
+    if not refresh_token or refresh_token == "None":
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED,detail = "Login Required")
+    decoded_access_jwt = decode_jwt_token(access_token)
+    decoded_refresh_jwt = decode_jwt_token(refresh_token)
+    # 로그인용 토큰 check
+    verify_usage(decoded_token = decoded_access_jwt,usage = LOGIN)
+    # user_id check
+    verify_user_id(decoded_token = decoded_access_jwt,user_id = decoded_refresh_jwt.get(USER_ID))

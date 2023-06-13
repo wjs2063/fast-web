@@ -4,7 +4,7 @@ from fastapi_camelcase import CamelModel
 from datetime import datetime
 from typing import Union
 from bson.objectid import ObjectId
-
+from enum import Enum
 """
 Question 객체 
 아이디
@@ -16,38 +16,66 @@ Question 객체
 
 """
 
-class Question(BaseModel):
+class LanguageEnum(str,Enum):
+    python = "python"
+    C = "C/C++"
+    Go = "Go"
+    Javascript = "Javascript"
+    Rust = "Rust"
+    Java = "Java"
+    Ruby = "Ruby"
+    Kotlin = "Kotlin"
+    Swift = "Swift"
+
+
+    
+
+class Input_Question(CamelModel):
     user_id :str
     nickname : str
     subject : str
     content : str
     category : str
-    answer :  Union[list,None] = None
-    created_time : str = Field(...)
-    updated_time : str = Field(...)
-    language : str = Field(...)
+    #created_at : str = Field(...)
+    #updated_at : str = Field(...)
+    language : LanguageEnum
     is_completed : bool
-    voted : list
 
     class Config(BaseConfig):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         schema_extra = {
             "example":{
-                "user_id":"test_id1",
+                "user_id":"aaa1234",
                 "nickname":"test_nick",
                 "subject":"DFS/BFS Base Code",
                 "content":"DFS란말이죠?",
                 "category":"DFS/BFS",
-                "language":"Python",
-                "answer": [],
+                "language":"python",
                 "is_completed":False,
-                "voted" : [],
-                "create_time":datetime.utcnow(),
-                "update_time":datetime.utcnow(),
+                #"created_time":datetime.utcnow(),
+                #"updated_time":datetime.utcnow(),
             }
         }
         json_encoders = {
             ObjectId: str,
             datetime:str,
+        }
+
+class OutputQuestion(CamelModel):
+    object_id : str
+    user_id :str
+    nickname : str
+    subject : str
+    content : str
+    category : str
+    created_at : datetime
+    updated_at : datetime
+    language : LanguageEnum
+    is_completed : bool
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId :str
         }
