@@ -2,7 +2,7 @@
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
 from fastapi_camelcase import CamelModel
 from datetime import datetime
-from typing import Union
+from typing import Union,List
 from bson.objectid import ObjectId
 from enum import Enum
 """
@@ -63,7 +63,7 @@ class Input_Question(CamelModel):
         }
 
 class OutputQuestion(CamelModel):
-    object_id : str
+    id : str =  Field (alias = "_id")
     user_id :str
     nickname : str
     subject : str
@@ -79,3 +79,7 @@ class OutputQuestion(CamelModel):
         json_encoders = {
             ObjectId :str
         }
+
+
+class QuestionList(BaseModel):
+    __root__ : List[OutputQuestion]

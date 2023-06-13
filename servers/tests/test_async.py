@@ -187,8 +187,27 @@ async def test_database_reset():
 
 @pytest.mark.asyncio
 async def test_get_question_list():
-    pass 
+    async with AsyncClient(app = main_app,base_url = base_url) as ac:
+        login_response = await ac.post("/api/auth/login",
+                                    headers = {
+                                    'accept': 'application/json',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
 
+                                    },
+                                content = 
+                                    'grant_type=&username=aaa1234&password=234567&scope=&client_id=&client_secret='
+                                
+                                    )
+        assert login_response.status_code == status.HTTP_200_OK
+        access_token = login_response.json()["token"]["token"]
+
+        response = await ac.get("/api/user/question",
+                                 headers = {
+                                     "access-token" : access_token
+                                     
+                                 }
+                                 )
+        assert response.status_code == status.HTTP_200_OK
 
 @pytest.mark.asyncio
 async def test_post_question():

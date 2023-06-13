@@ -27,7 +27,7 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
     return account_token
 
 
-@router.post("/reset_password",status_code = status.HTTP_200_OK)
+@router.post("/reset_password")
 async def reset_password(request:Request,token : str,password : Password,
                          db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     request = convert_binary_to_string(request)

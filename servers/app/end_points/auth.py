@@ -106,9 +106,9 @@ async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClien
     current_user = await get_user(db,user_id)
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원ID 입니다.")
-    return JSONResponse(content = None)
+    return 
 
-@router.get("/email",status_code = status.HTTP_200_OK)
+@router.get("/email")
 async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     query = {EMAIL:email_str}
     current_user = await find_one(db = db,collection = "users",query = query)
@@ -118,7 +118,7 @@ async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[mot
 
 
 
-@router.get("/register/validation",status_code = status.HTTP_200_OK)
+@router.get("/register/validation")
 async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
     if decoded_jwt.get(USAGE) != EMAIL:
@@ -133,7 +133,7 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
         HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
     return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
 
-@router.post("/accessToken",status_code = status.HTTP_200_OK )
+@router.post("/accessToken")
 async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),]):
     request = convert_binary_to_string(request)
     cookies = parse_cookie(request)
