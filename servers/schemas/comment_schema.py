@@ -9,10 +9,10 @@ from enum import Enum
 
 
 class Comment(CamelModel):
-    "user_id" : str 
-    "item_id" : str 
-    "comment" : str 
-    "created_at" : datetime 
+    user_id : str 
+    item_id : str 
+    comment : str 
+    created_at : datetime 
     class Config(BaseConfig):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
@@ -33,9 +33,9 @@ class Details :
     DateAdded : datetime
 
 class Like(CamelModel):
-    "user_id" : str 
-    "item_id" : str 
-    "details" : Details
+    user_id : str 
+    item_id : str 
+    details : Details
     class Config(BaseConfig):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
