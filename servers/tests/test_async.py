@@ -248,4 +248,33 @@ async def test_update_question():
 
 @pytest.mark.asyncio
 async def test_delete_question():
-    pass
+    async with AsyncClient(app = main_app,base_url = base_url) as ac:
+        login_response = await ac.post("/api/auth/login",
+                                    headers = {
+                                    'accept': 'application/json',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+
+                                    },
+                                content = 
+                                    'grant_type=&username=aaa1234&password=234567&scope=&client_id=&client_secret='
+                                    )
+        assert login_response.status_code == status.HTTP_200_OK
+        access_token = login_response.json()["token"]["token"]
+        response = await ac.get("/api/profile/question",
+                                 headers = {
+                                     "access-token" : access_token
+                                     
+                                 }
+                                 )
+        assert response.status_code == status.HTTP_200_OK
+        question_list = response.json()[QUESTIONS]
+        print(question_list)
+        question_id = question_list[0][ID]
+
+        response = await ac.delete(f"/api/user/question?question_id={question_id}",
+                                 headers = {
+                                     'accept': 'application/json',
+                                     "access-token": access_token
+                                 }
+                                 )
+        assert response.status_code == status.HTTP_200_OK
