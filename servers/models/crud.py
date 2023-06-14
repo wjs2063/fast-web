@@ -14,6 +14,9 @@ async def find_one(db,collection,query):
 async def find_many(db,collection, query):
     return await db[collection].find(query)
 
+async def delete_one(db,collection,query):
+    return await db[collection].delete_one(query)
+
 async def find_many_with_pagination(db,collection,query,page = 1,limit = DEFAULT_LIMIT):
     offset = (page - 1) * limit
     return await db[collection].find(query).skip(offset).limit(limit).to_list(length = DEFAULT_LIMIT)
