@@ -268,7 +268,6 @@ async def test_delete_question():
                                  )
         assert response.status_code == status.HTTP_200_OK
         question_list = response.json()[QUESTIONS]
-        print(question_list)
         question_id = question_list[0][ID]
 
         response = await ac.delete(f"/api/user/question?question_id={question_id}",
