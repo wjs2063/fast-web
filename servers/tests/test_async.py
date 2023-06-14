@@ -201,7 +201,7 @@ async def test_get_question_list():
         assert login_response.status_code == status.HTTP_200_OK
         access_token = login_response.json()["token"]["token"]
 
-        response = await ac.get("/api/user/question",
+        response = await ac.get("/api/profile/question",
                                  headers = {
                                      "access-token" : access_token
                                      
