@@ -52,7 +52,7 @@ async def update_question(db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depend
 
 # user_id 의 question 삭제
 @router.delete("/question")
-async def update_question(question_id,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
+async def delete_question(question_id,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     req = dict(request)
     req = convert_binary_to_string(req)
     verfiy_token(req,access_token = access_token)
