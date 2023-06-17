@@ -76,7 +76,7 @@ async def logout(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient 
     # JWT_TOKEN 자동으로 raise error
     decoded_jwt = decode_jwt_token(token = access_token)
     response = JSONResponse(content = None)
-    response.set_cookie(key = REFRESH_TOKEN,value = None,httponly = True)
+    response.set_cookie(key = REFRESH_TOKEN,value = None,httponly = True,expires = 1200,max_age = 1200,samesite = "none",secure = True)
     await insert_logout_history(db = db,collection = "logout",decoded_jwt = decoded_jwt,token = access_token,request = request)
     # access token 유효한지 check
     return response
