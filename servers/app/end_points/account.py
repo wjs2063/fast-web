@@ -5,11 +5,12 @@ from models.crud import *
 from schemas.user_schema import *
 from schemas.token_schema import *
 from configs.security import *
+from configs.status_code import *
 
 router = APIRouter()
 
 
-@router.post("/token",status_code = status.HTTP_200_OK)
+@router.post("/token",status_code = status.HTTP_200_OK,responses = {**response_status_code})
 async def account_token(request : Request,user_id : str ,password : Password,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     request = convert_binary_to_string(request)
     password = password.password
@@ -27,7 +28,8 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
     return account_token
 
 
-@router.post("/reset_password")
+
+@router.post("/reset_password",responses = {**response_status_code})
 async def reset_password(request:Request,token : str,password : Password,
                          db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     request = convert_binary_to_string(request)

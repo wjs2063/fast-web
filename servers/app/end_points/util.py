@@ -19,12 +19,12 @@ from email.mime.text import MIMEText
 from schemas.mail_schema import *
 from typing import Annotated
 from models.database import *
-
+from configs.status_code import *
 router = APIRouter()
 
 
 
-@router.post("/register/email")
+@router.post("/register/email",responses = {**response_status_code})
 async def simple_send(request:Request,email: EmailSchema) -> JSONResponse:
     request = convert_binary_to_string(request)
     data = {

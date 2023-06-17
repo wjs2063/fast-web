@@ -20,12 +20,13 @@ from configs.security import *
 from schemas.question_schema import *
 from fastapi.encoders import jsonable_encoder
 from models.crud import *
+from configs.status_code import *
 import json
 
 router = APIRouter()
 
 # user_id 의 질문목록 가져오기 
-@router.get("/question")
+@router.get("/question-list",responses = {**response_status_code})
 async def get_question_list(request: Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     req = dict(request)
     req = convert_binary_to_string(req)
