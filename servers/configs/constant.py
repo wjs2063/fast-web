@@ -38,6 +38,9 @@ TOKEN = "token"
 REFRESH_TOKEN = "refresh_token"
 ACCESS_TOKEN = "access_token"
 
+#USER
+USERS = "users"
+
 # LOGIN, LOGOUT DATABASE
 LOGIN = "login"
 LOGIN_TIME = "login_time"

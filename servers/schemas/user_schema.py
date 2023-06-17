@@ -7,6 +7,7 @@ from typing import *
 from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
 from datetime import datetime,date
 from passlib.context import CryptContext
+from configs.constant import *
 from enum import Enum
 # instance
 
@@ -69,6 +70,25 @@ class UserData(CamelModel):
             }
         }
 
+
+class LoginOutput(CamelModel):
+    nickname : str 
+    token : dict 
+    class Config(BaseConfig):
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId : str
+        }
+        schema_extra = {
+            "example" : {
+                NICKNAME : "test_user1",
+                TOKEN :{TOKEN: "eyJhbGcdfOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWFhMTIzNCIsasdvclIjoibG9naW4iLCJpYXQiOjE2ODY5OTM3MjgsImV4cCI6MTY4Njk5NTUyOCwiY2xpZW50X2lwIjoiNTkdda5jQzLjE2NiJ9.lG1knoN8BsXQrlUwdf5wI5BOQMhvFQ9ddh-Myd2TEJ0"}
+            }
+        }
+    
+
 class Password(CamelModel):
     password : str 
 
@@ -76,12 +96,12 @@ class Password(CamelModel):
 # function
 
 def serialize_id(data):
-    data["_id"] = str(data["_id"])
+    data[ID] = str(data[ID])
 
 
 def set_datetime(data):
-    data["create_time"] = datetime.utcnow()
-    data["update_time"] = datetime.utcnow()
+    data[CREATED_AT] = datetime.utcnow()
+    data[UPDATED_AT] = datetime.utcnow()
 
 async def get_user(db,query):
     data = await db.users.find_one(query)
