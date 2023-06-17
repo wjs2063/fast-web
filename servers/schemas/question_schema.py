@@ -63,28 +63,22 @@ class CategoryEnum(str,Enum):
     
 
 class Input_Question(CamelModel):
-    user_id :str
-    nickname : str
     subject : str
     content : str
     category : CategoryEnum
     #created_at : str = Field(...)
     #updated_at : str = Field(...)
     language : LanguageEnum
-    is_completed : bool
 
     class Config(BaseConfig):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         schema_extra = {
             "example":{
-                "user_id" : "aaa1234",
-                "nickname":"test_nick",
                 "subject":"DFS/BFS Base Code",
                 "content":"DFS란말이죠?",
                 "category":"DFS",
                 "language":"Python",
-                "is_completed":False,
                 #"created_time":datetime.utcnow(),
                 #"updated_time":datetime.utcnow(),
             }
