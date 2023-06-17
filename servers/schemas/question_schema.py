@@ -33,7 +33,7 @@ class CategoryEnum(str,Enum):
     bfs = "BFS"
     DynamicProgramming = "DynamicProgramming"
     Implementation = "Implementation"
-    BinarySearch = "Binary_Search"
+    BinarySearch = "BinarySearch"
     Simulation = "Simulation"
     UnionFind = "UnionFind"
     Dijkstra = "Dijkstra"
