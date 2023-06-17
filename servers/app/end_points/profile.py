@@ -26,7 +26,7 @@ import json
 router = APIRouter()
 
 # user_id 의 질문목록 가져오기 
-@router.get("/question-list",responses = {**response_status_code})
+@router.get("/question-list",response_model = QuestionList,responses = {**response_status_code})
 async def get_question_list(request: Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     req = dict(request)
     req = convert_binary_to_string(req)
