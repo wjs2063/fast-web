@@ -233,8 +233,8 @@ async def test_post_question():
                                             "nickname": "test_nick",
                                             "subject": "DFS/BFS Base Code",
                                             "content": "DFS란말이죠?",
-                                            "category": "DFS/BFS",
-                                            "language": "python",
+                                            "category": "DFS",
+                                            "language": "Python",
                                             "is_completed": False
                                             }
                                          )
