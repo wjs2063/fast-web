@@ -229,13 +229,10 @@ async def test_post_question():
                                              "access-token":access_token
                                          },
                                          json = {
-                                            "user_id": "aaa1234",
-                                            "nickname": "test_nick",
                                             "subject": "DFS/BFS Base Code",
                                             "content": "DFS란말이죠?",
                                             "category": "DFS",
                                             "language": "Python",
-                                            "is_completed": False
                                             }
                                          )
         assert question_post_response.status_code == status.HTTP_201_CREATED

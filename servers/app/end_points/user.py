@@ -46,6 +46,8 @@ async def post_question(question:Input_Question,request:Request,db: Annotated[mo
     question[CREATED_AT] = current_time
     question[UPDATED_AT] = current_time
     question[USER_ID] = decoded_access_token.get(USER_ID)
+    question[NICKNAME] = decoded_access_token.get(NICKNAME)
+    question[IS_COMPLETED] = False
     _id = await insert_one(db = db ,collection = QUESTIONS,query = question)
     question[ID] = convert_objectId_to_string(_id.inserted_id)
     question = OutputQuestion(**question)
