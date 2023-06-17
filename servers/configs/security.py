@@ -21,7 +21,7 @@ def encode_access_token(request:Request,data: dict, expires_delta: Union[timedel
     if expires_delta:
         expire_time = current_time + timedelta(minutes = int(expires_delta))
     else:
-        expire_time = current_time + timedelta(minutes = 15)
+        expire_time = current_time + timedelta(minutes = 20)
     to_encode.update({"iat": current_time})
     to_encode.update({"exp": expire_time})
     to_encode.update({CLIENT_IP:request["headers"]["x-real-ip"] if request["headers"].get("x-real-ip") else request["client"][0]})
@@ -133,3 +133,9 @@ def verfiy_token(req : Request,access_token ):
     verify_usage(decoded_token = decoded_access_jwt,usage = LOGIN)
     # user_id check
     verify_user_id(decoded_token = decoded_access_jwt,user_id = decoded_refresh_jwt.get(USER_ID))
+
+def convert_objectId_to_string(_id):
+    return str(_id)
+
+def convert_string_to_objectId(_id):
+    return ObjectId(str)

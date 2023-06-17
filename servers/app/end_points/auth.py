@@ -23,7 +23,7 @@ from http.cookies import SimpleCookie
 from configs.status_code import *
 router = APIRouter()
 
-@router.post("/login",status_code = status.HTTP_200_OK,responses = {**response_status_code})
+@router.post("/login",response_model = LoginOutput,status_code = status.HTTP_200_OK,responses = {**response_status_code})
 async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
@@ -40,6 +40,7 @@ async def login (request : Request,
     # proxy 환경에서 사용하면 로직이 달라짐.
     data = {
         USER_ID : user[USER_ID],
+        NICKNAME : user[NICKNAME],
         USAGE : LOGIN
     }
     refresh_token = await get_refresh_token(db,request = request,data = data)

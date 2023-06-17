@@ -6,7 +6,7 @@ from schemas.user_schema import *
 from schemas.token_schema import *
 from configs.security import *
 from configs.status_code import *
-
+from configs.constant import *
 router = APIRouter()
 
 
@@ -15,13 +15,14 @@ async def account_token(request : Request,user_id : str ,password : Password,db:
     request = convert_binary_to_string(request)
     password = password.password
     query = {USER_ID:user_id}
-    user_info = await find_one(db = db,collection = "users",query = query)
-    if not user_info:
+    user = await find_one(db = db,collection = USERS ,query = query)
+    if not user:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
-    user_info = dict(user_info) 
-    verify_password(password,user_info[PASSWORD])
+    user= dict(user) 
+    verify_password(password,user[PASSWORD])
     data = {
-        USER_ID : user_id,
+        USER_ID : user[USER_ID],
+        NICKNAME : user[NICKNAME],
         USAGE : ACCOUNT,
     }
     account_token = encode_access_token(request = request,data = data)

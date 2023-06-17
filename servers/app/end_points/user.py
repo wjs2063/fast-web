@@ -26,21 +26,25 @@ import json
 
 router = APIRouter()
 
-    
 
-# user_id 의 질문 등록 
+
+# question의 
+
+# user의 질문 등록 
 @router.post("/question",status_code = status.HTTP_201_CREATED,response_model = OutputQuestion,responses = {**response_status_code})
 async def post_question(question:Input_Question,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     req = dict(request)
     req = convert_binary_to_string(req)
     # token validate
     verfiy_token(req,access_token = access_token)
+    decoded_access_token = decode_jwt_token(token = access_token)
     current_time = datetime.utcnow()
     question = question.dict()
     question[CREATED_AT] = current_time
     question[UPDATED_AT] = current_time
+    question[USER_ID] = decoded_access_token.get(USER_ID)
     _id = await insert_one(db = db ,collection = QUESTIONS,query = question)
-    question[ID] = str(ObjectId(_id.inserted_id))
+    question[ID] = convert_objectId_to_string(_id.inserted_id)
     question = OutputQuestion(**question)
     return question
 
@@ -85,7 +89,7 @@ async def delete_question(question_id,request:Request,db: Annotated[motor_asynci
     return response
  
 
-@router.post("/answer",responses = {**response_status_code})
+@router.post("/answer",response_model = AnswerOutput,responses = {**response_status_code})
 async def post_answer(question_id,answer : Answer,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     req = dict(request)
     req = convert_binary_to_string(req)
@@ -103,12 +107,12 @@ async def post_answer(question_id,answer : Answer,request:Request,db: Annotated[
     result = {
         USER_ID : decoded_access_token.get(USER_ID),
         ITEM_ID : question_id,
-        ANSWER_ID : str(_id.inserted_id),
+        ANSWER_ID : convert_objectId_to_string(_id.inserted_id),
         CONTENT : answer,
         
     }
     response = JSONResponse(status_code = status.HTTP_201_CREATED,
                             content =  jsonable_encoder(result)
                             )
-    return response
+    return result
 

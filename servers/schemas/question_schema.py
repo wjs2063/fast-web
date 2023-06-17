@@ -46,6 +46,7 @@ class Input_Question(CamelModel):
         arbitrary_types_allowed = True
         schema_extra = {
             "example":{
+                "user_id" : "aaa1234",
                 "nickname":"test_nick",
                 "subject":"DFS/BFS Base Code",
                 "content":"DFS란말이죠?",
@@ -77,6 +78,20 @@ class OutputQuestion(CamelModel):
         allow_population_by_field_name = True
         json_encoders = {
             ObjectId :str
+        }
+        schema_extra = {
+            "example":{
+                "_id": "ffa13a648d8da7857f30dd73c47afbd2",
+                "userId": "aaa1234",
+                "nickname": "test_nick",
+                "subject": "DFS/BFS Base Code",
+                "content": "DFS란말이죠?",
+                "category": "DFS/BFS",
+                "createdAt": "2023-06-17T10:40:39.550743",
+                "updatedAt": "2023-06-17T10:40:39.550743",
+                "language": "python",
+                "isCompleted": False
+                }
         }
 
 
