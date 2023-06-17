@@ -59,6 +59,15 @@ class UserData(CamelModel):
         json_encoders = {
             ObjectId : str
         }
+        schema_extra = {
+            "example" : {
+                "name" : "전재현",
+                "user_id" : "aaa1234",
+                "email" : "kkk@example.com",
+                "nickname" : "test_user",
+                "disabled" : False,
+            }
+        }
 
 class Password(CamelModel):
     password : str 

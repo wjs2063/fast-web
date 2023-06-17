@@ -55,6 +55,8 @@ PASSWORD = "password"
 NICKNAME = "nickname"
 ACCOUNT = "account"
 
+ANSWER_ID = "answer_id"
+ITEM_ID = "item_id"
 OBJECT_ID = "objectId"
 ID = "_id"
 
@@ -64,5 +66,7 @@ ID = "_id"
 DEFAULT_LIMIT = 10
 QUESTIONS = "questions"
 ANSWERS = "answers"
+ANSWER = "answer"
+CONTENT = "content"
 COMMENTS = "comments"
 TOTAL_DOCS = "total_docs"

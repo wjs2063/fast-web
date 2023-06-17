@@ -3,6 +3,8 @@ from fastapi.responses import *
 from pymongo import ReturnDocument
 from datetime import datetime 
 from configs.constant import *
+from typing import List
+
 
 async def insert_one(db,collection,query):
     _id = await db[collection].insert_one(query)
@@ -16,6 +18,7 @@ async def find_many(db,collection, query):
 
 async def delete_one(db,collection,query):
     return await db[collection].delete_one(query)
+
 
 async def find_many_with_pagination(db,collection,query,page = 1,limit = DEFAULT_LIMIT):
     offset = (page - 1) * limit
@@ -54,7 +57,6 @@ async def insert_logout_history(db,collection,decoded_jwt, token : str ,request 
     }
     return await insert_one(db ,collection ,docs)
 
-from typing import List
 def serealize(docs : List[dict] ):
     for i,v in enumerate(docs):
         v["_id"] = str(v["_id"])

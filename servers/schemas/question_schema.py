@@ -46,7 +46,6 @@ class Input_Question(CamelModel):
         arbitrary_types_allowed = True
         schema_extra = {
             "example":{
-                "user_id":"aaa1234",
                 "nickname":"test_nick",
                 "subject":"DFS/BFS Base Code",
                 "content":"DFS란말이죠?",

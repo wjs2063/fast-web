@@ -20,10 +20,10 @@ from smtplib import SMTP
 from configs.security import *
 import pymongo
 from http.cookies import SimpleCookie
-
+from configs.status_code import *
 router = APIRouter()
 
-@router.post("/login",status_code = status.HTTP_200_OK)
+@router.post("/login",status_code = status.HTTP_200_OK,responses = {**response_status_code})
 async def login (request : Request,
                  form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                  db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],
@@ -50,14 +50,15 @@ async def login (request : Request,
 
     response = JSONResponse(
     content = {
+        NICKNAME : user[NICKNAME],
         TOKEN:jsonable_encoder(token)
     }
     )
     response.set_cookie(key = REFRESH_TOKEN,value = refresh_token,httponly = True,expires = 1200,max_age = 1200,samesite = "none",secure = True)
-    await insert_login_history(db = db ,collection = "login",data = data , token = access_token,request = request)
+    await insert_login_history(db = db ,collection = LOGIN,data = data , token = access_token,request = request)
     return response
 
-@router.post("/logout",status_code = status.HTTP_200_OK)
+@router.post("/logout",status_code = status.HTTP_200_OK,responses = {**response_status_code})
 async def logout(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header(),):
     request = convert_binary_to_string(request)
     cookies = parse_cookie(request)
@@ -80,7 +81,7 @@ async def logout(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient 
     return response
 
 
-@router.post("/sign-up",response_model = UserData,status_code = status.HTTP_201_CREATED)
+@router.post("/sign-up",response_model = UserData,status_code = status.HTTP_201_CREATED,responses = {**response_status_code})
 async def create_user(request:Request,user :User,token : Encode_Token,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     request = convert_binary_to_string(request)
     user = dict(user)
@@ -101,14 +102,14 @@ async def create_user(request:Request,user :User,token : Encode_Token,db: Annota
     _id = await insert_one(db,collection = "users",query = user)
     return user
 
-@router.get("/userId",status_code = status.HTTP_200_OK)
+@router.get("/userId",status_code = status.HTTP_200_OK,responses = {**response_status_code})
 async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     current_user = await get_user(db,user_id)
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 회원ID 입니다.")
     return 
 
-@router.get("/email")
+@router.get("/email",responses = {**response_status_code})
 async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     query = {EMAIL:email_str}
     current_user = await find_one(db = db,collection = "users",query = query)
@@ -118,7 +119,7 @@ async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[mot
 
 
 
-@router.get("/register/validation")
+@router.get("/register/validation",responses = {**response_status_code})
 async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     decoded_jwt = jwt.decode(token,SECRETKEY,algorithms = [ALGORITHM])
     if decoded_jwt.get(USAGE) != EMAIL:
@@ -133,7 +134,7 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
         HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
     return JSONResponse(status_code = status.HTTP_200_OK, content = {"message" : "token validation Success!"})
 
-@router.post("/accessToken")
+@router.post("/accessToken",responses = {**response_status_code})
 async def generate_access_token(request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb),]):
     request = convert_binary_to_string(request)
     cookies = parse_cookie(request)
