@@ -74,3 +74,5 @@ CONTENT = "content"
 COMMENTS = "comments"
 TOTAL_DOCS = "total_docs"
 IS_COMPLETED = "is_completed"
+
+PAGE = "page"

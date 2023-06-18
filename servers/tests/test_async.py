@@ -201,7 +201,7 @@ async def test_get_question_list():
         assert login_response.status_code == status.HTTP_200_OK
         access_token = login_response.json()["token"]["token"]
 
-        response = await ac.get("/api/profile/question-list",
+        response = await ac.get("/api/profile/question-list?page=1",
                                  headers = {
                                      "access-token" : access_token
                                      
@@ -257,7 +257,7 @@ async def test_delete_question():
                                     )
         assert login_response.status_code == status.HTTP_200_OK
         access_token = login_response.json()["token"]["token"]
-        response = await ac.get("/api/profile/question-list",
+        response = await ac.get("/api/profile/question-list?page=1",
                                  headers = {
                                      "access-token" : access_token
                                      
