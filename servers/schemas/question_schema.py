@@ -6,6 +6,7 @@ from typing import Union,List
 from bson.objectid import ObjectId
 from enum import Enum
 from configs.constant import *
+from schemas.answer_schema import *
 """
 Question 객체 
 아이디
@@ -183,5 +184,40 @@ class QuestionList(BaseModel):
 """
 
 class QuestionWithAnswer(CamelModel):
-    question : dict 
-    answers : List
+    question : OutputQuestion
+    answers : List[AnswerOutput]
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId :str
+        }
+        schema_extra = {
+            "example":{
+                QUESTION : 
+                    {
+                    "_id": "ffa13a648d8da7857f30dd73c47afbd2",
+                    "userId": "aaa1234",
+                    "nickname": "test_nick",
+                    "subject": "DFS/BFS Base Code",
+                    "content": "DFS란말이죠?",
+                    "category": "DFS",
+                    "createdAt": "2023-06-17T10:40:39.550743",
+                    "updatedAt": "2023-06-17T10:40:39.550743",
+                    "language": "Python",
+                    "isCompleted": False
+                    },
+                ANSWERS:[{
+                    USER_ID : "aaa1234",
+                    ITEM_ID : "ffa13a648d8da7857f30dd73c47afbd2",
+                    ANSWER_ID : "ffd648add86b122cd8ed98fa5b566",
+                    CONTENT : {
+                        "answer": "정답은 O(N^2) 입니다",
+                        "create_time": "2023-06-17T10:10:57.752090",
+                        "update_time": "2023-06-17T10:10:57.752091"
+                    }
+                }for _ in range(3)]
+            }
+        }
+
+
