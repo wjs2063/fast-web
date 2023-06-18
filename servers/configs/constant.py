@@ -68,6 +68,7 @@ ID = "_id"
 
 DEFAULT_LIMIT = 10
 QUESTIONS = "questions"
+QUESTION = "question"
 ANSWERS = "answers"
 ANSWER = "answer"
 CONTENT = "content"

@@ -29,7 +29,7 @@ router = APIRouter()
 
 
 # 특정 question 가져오기
-@router.get("/question",status_code = status.HTTP_200_OK,responses = {**response_status_code})
+@router.get("/question",response_model = QuestionWithAnswer,status_code = status.HTTP_200_OK,responses = {**response_status_code})
 async def get_question(question_id:str,request:Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],access_token : str =  Header()):
     pass
 
