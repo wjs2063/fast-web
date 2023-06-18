@@ -16,7 +16,7 @@ import os
 from email.mime.text import MIMEText
 from smtplib import SMTP
 
-from app.end_points import user,auth,util,profile,account,admin
+from app.end_points import user,auth,util,profile,account,admin,board
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 api_router = APIRouter()
@@ -27,6 +27,7 @@ api_router.include_router(util.router,prefix = "/api/util",tags = ["util"])
 api_router.include_router(profile.router,prefix = "/api/profile",tags = ["profile"])
 api_router.include_router(account.router,prefix = "/api/account",tags = ["account"])
 api_router.include_router(admin.router,prefix = "/api/admin",tags = ["admin"])
+api_router.include_router(board.router,prefix = "/api/board",tags = ["board"])
 
 
 

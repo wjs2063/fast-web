@@ -21,8 +21,19 @@ async def delete_one(db,collection,query):
 
 
 async def find_many_with_pagination(db,collection,query,page = 1,limit = DEFAULT_LIMIT):
-    offset = (page - 1) * limit
-    return await db[collection].find(query).skip(offset).limit(limit).to_list(length = DEFAULT_LIMIT)
+    try:
+        offset = (page - 1) * limit
+        return await db[collection].find(query).skip(offset).limit(limit).to_list(length = DEFAULT_LIMIT)
+    except Exception as e :
+        raise HTTPException(status_code = 500,detail = str(e)) 
+    
+async def find_many_with_pagination_sorted_by_created(db,collection,query,page = 1,limit = DEFAULT_LIMIT):
+    try:
+        offset = (page - 1) * limit
+        return await db[collection].find(query).sort(CREATED_AT,-1).skip(offset).limit(limit).to_list(length = DEFAULT_LIMIT)
+    except Exception as e :
+        raise HTTPException(status_code = 500,detail = str(e)) 
+
 
 async def count_total_documents(db,collection,query):
     return await db[collection].count_documents(query)

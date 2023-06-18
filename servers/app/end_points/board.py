@@ -20,30 +20,28 @@ from configs.security import *
 from schemas.question_schema import *
 from fastapi.encoders import jsonable_encoder
 from models.crud import *
-from configs.constant import *
+from schemas.answer_schema import *
 from configs.status_code import *
 import json
 
 router = APIRouter()
 
-# user_id 의 질문목록 가져오기 
-@router.get("/question-list",response_model = PageQuestionList,responses = {**response_status_code})
-async def get_question_list(request: Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],page: Annotated[int, Query(ge = 1)],access_token : str =  Header()):
-    req = dict(request)
-    req = convert_binary_to_string(req)
+
+
+
+@router.get("/list/recent-questions",response_model = PageQuestionList,responses = {**response_status_code})
+async def get_question_list(request: Request,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)],page: Annotated[int, Query(ge = 1)]):
     # token 검증 ( refresh + access)
-    verfiy_token(req = req,access_token = access_token)
     # access_token 복호화
-    decoded_access_token = decode_jwt_token(token = access_token)
     # userId 의 질문총개수 
-    total_docs = await count_total_documents(db = db,collection = QUESTIONS,query = {USER_ID:decoded_access_token.get(USER_ID)})
+    total_docs = await count_total_documents(db = db,collection = QUESTIONS,query = {})
     # 10개씩 끊어서 가져온다(제일 첫페이지 10개)
     if total_docs == 0:
         page = 1
     elif (total_docs - 1) // DEFAULT_LIMIT + 1 < page:
         page = (total_docs - 1) // DEFAULT_LIMIT + 1
 
-    questions = await find_many_with_pagination(db = db,collection = QUESTIONS,page = page,query = {USER_ID :decoded_access_token.get(USER_ID)})
+    questions = await find_many_with_pagination_sorted_by_created(db = db,collection = QUESTIONS,page = page,query = {})
     # List[class] 형태에서 class 내부 변수가 ObjectId 일때 serealize 하는 pydantic 코드를 찾아야함.
     response = JSONResponse(
         status_code = status.HTTP_200_OK,
@@ -54,4 +52,3 @@ async def get_question_list(request: Request,db: Annotated[motor_asyncio.AsyncIO
         }
         )
     return response
-

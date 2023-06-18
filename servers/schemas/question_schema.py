@@ -112,10 +112,10 @@ class OutputQuestion(CamelModel):
                 "nickname": "test_nick",
                 "subject": "DFS/BFS Base Code",
                 "content": "DFS란말이죠?",
-                "category": "DFS/BFS",
+                "category": "DFS",
                 "createdAt": "2023-06-17T10:40:39.550743",
                 "updatedAt": "2023-06-17T10:40:39.550743",
-                "language": "python",
+                "language": "Python",
                 "isCompleted": False
                 }
         }
@@ -138,12 +138,43 @@ class QuestionList(CamelModel):
                 "nickname": "test_nick",
                 "subject": "DFS/BFS Base Code",
                 "content": "DFS란말이죠?",
-                "category": "DFS/BFS",
+                "category": "DFS",
                 "createdAt": "2023-06-17T10:40:39.550743",
                 "updatedAt": "2023-06-17T10:40:39.550743",
-                "language": "python",
+                "language": "Python",
                 "isCompleted": False
                 }]
+        }
+    }
+        
+
+
+class PageQuestionList(CamelModel):
+    TOTAL_DOCS: int
+    PAGE : int = Field(ge = 1)
+    QUESTIONS : List[OutputQuestion]
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        allow_population_by_field_name = True
+        json_encoders = {
+            ObjectId :str
+        }
+        schema_extra = {
+            "example":{
+                TOTAL_DOCS : 500,
+                PAGE : 1,
+                QUESTIONS:[{
+                "_id": "ffa13a648d8da7857f30dd73c47afbd2",
+                "userId": "aaa1234",
+                "nickname": "test_nick",
+                "subject": "DFS/BFS Base Code",
+                "content": "DFS란말이죠?",
+                "category": "DFS",
+                "createdAt": "2023-06-17T10:40:39.550743",
+                "updatedAt": "2023-06-17T10:40:39.550743",
+                "language": "Python",
+                "isCompleted": False
+                } for _ in range(10)]
         }
     }
 """
