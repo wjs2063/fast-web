@@ -34,7 +34,7 @@ Motor library로 비동기로 작성. 최대한 fastAPI 아키텍쳐 특성을 �
 
 Locust : Gunicorn worker 4 로 측정 
 
-1400명의 사용자들을 13초내에 응답값 줄수있음.
+1400명의 사용자들을 DB에 접근하는 요청을 13초내에 응답 
 
 
 ## Sequence Diagram
