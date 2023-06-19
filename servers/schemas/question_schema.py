@@ -1,5 +1,5 @@
 
-from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
+from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig,ValidationError, validator
 from fastapi_camelcase import CamelModel
 from datetime import datetime
 from typing import Union,List
@@ -64,12 +64,20 @@ class CategoryEnum(str,Enum):
     
 
 class Input_Question(CamelModel):
-    subject : str
-    content : str
+    subject : str = Field(min_length = 5,max_length = 50)
+    content : str = Field(min_length = 5,max_length = 5000)
     category : CategoryEnum
     #created_at : str = Field(...)
     #updated_at : str = Field(...)
     language : LanguageEnum
+
+    @validator('subject')
+    def subject_validator(cls,v):
+        return v 
+    @validator('content')
+    def content_validator(cls,v):
+        return v 
+
 
     class Config(BaseConfig):
         allow_population_by_field_name = True
@@ -91,15 +99,28 @@ class Input_Question(CamelModel):
 
 class OutputQuestion(CamelModel):
     id : str =  Field (alias = "_id")
-    user_id :str
-    nickname : str
-    subject : str
-    content : str
-    category : str
+    user_id : str = Field(min_length = 2,max_length = 15)
+    nickname : str = Field(min_length = 2,max_length = 15)
+    subject : str = Field(min_length = 5,max_length = 50)
+    content : str = Field(min_length = 5,max_length = 5000)
+    category : CategoryEnum
     created_at : datetime
     updated_at : datetime
     language : LanguageEnum
     is_completed : bool
+    @validator('user_id')
+    def userId_validator(cls,v):
+        return v 
+    @validator('nickname')
+    def nickname_validator(cls,v):
+        return v 
+    @validator('subject')
+    def subject_validator(cls,v):
+        return v 
+    @validator('content')
+    def content_validator(cls,v):
+        return v 
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
         allow_population_by_field_name = True
@@ -122,8 +143,10 @@ class OutputQuestion(CamelModel):
         }
 
 class QuestionList(CamelModel):
-    TOTAL_DOCS: int
+    TOTAL_DOCS: int = Field(ge = 0)
     QUESTIONS : List[OutputQuestion]
+
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
         allow_population_by_field_name = True
@@ -154,6 +177,9 @@ class PageQuestionList(CamelModel):
     TOTAL_DOCS: int
     PAGE : int = Field(ge = 1)
     QUESTIONS : List[OutputQuestion]
+
+
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
         allow_population_by_field_name = True

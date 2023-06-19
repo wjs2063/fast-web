@@ -4,7 +4,7 @@ from fastapi_camelcase import CamelModel
 from fastapi import *
 from bson import ObjectId
 from typing import *
-from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig
+from pydantic import BaseModel,EmailStr,Field,Required,BaseConfig,ValidationError, validator
 from datetime import datetime,date
 from passlib.context import CryptContext
 from configs.constant import *
@@ -19,13 +19,28 @@ class User(CamelModel):
     name : str = Field(min_length = 2,max_length = 15)
     user_id: str = Field(min_length = 2,max_length = 15)
     email : EmailStr = Field(default = None)
-    password :str = Field(min_length = 7,max_length = 15)
+    password :str = Field(min_length = 5,max_length = 64)
     nickname : str = Field(min_length = 2,max_length = 15)
     gender : GenderEnum
     birth_year : int = Field(ge = 1900,le = date.today().year)
     birth_month : int = Field(ge = 1,le = 12)
     birth_day : int = Field(ge = 1, le = 31)
     disabled : bool
+    @validator('name')
+    def name_validator(cls,v):
+        return v 
+    @validator('user_id')
+    def userId_validator(cls,v):
+        return v 
+    @validator('email')
+    def email_validator(cls,v):
+        return v 
+    @validator('nickname')
+    def nickname_validator(cls,v):
+        return v 
+    @validator('password')
+    def password_validator(cls,v):
+        return v 
 
     class Config:
         use_enum_values = True
@@ -40,7 +55,7 @@ class User(CamelModel):
                 "birth_year" :1900,
                 "birth_month" :5,
                 "birth_day" : 25,
-                "disabled":True,
+                "disabled" : True
             }
         }
 
@@ -53,6 +68,20 @@ class UserData(CamelModel):
     email : EmailStr = Field(default = None)
     nickname : str = Field(min_length = 2,max_length = 15)
     disabled : Union[bool,None]
+
+    @validator('name')
+    def name_validator(cls,v):
+        return v 
+    @validator('user_id')
+    def userId_validator(cls,v):
+        return v  
+    @validator('email')
+    def email_validator(cls,v):
+        return v 
+    @validator('nickname')
+    def nickname_validator(cls,v):
+        return v 
+
     class Config(BaseConfig):
         orm_mode = True
         allow_population_by_field_name = True
@@ -90,7 +119,7 @@ class LoginOutput(CamelModel):
     
 
 class Password(CamelModel):
-    password : str 
+    password : str = Field(min_length = 5,max_length = 64)
 
 
 # function

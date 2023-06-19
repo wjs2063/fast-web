@@ -90,17 +90,16 @@ async def create_user(request:Request,user :User,token : Encode_Token,db: Annota
     current_user = await get_user(db,{USER_ID:user[USER_ID]})
     if current_user :
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 아이디 입니다.")
-    if await find_one(db = db,collection = "users",query = {EMAIL:user[EMAIL]}):
+    if await find_one(db = db,collection = USERS,query = {EMAIL:user[EMAIL]}):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일 입니다.")
-    if await find_one(db = db,collection = "users",query = {NICKNAME:user[NICKNAME]}):
+    if await find_one(db = db,collection = USERS,query = {NICKNAME:user[NICKNAME]}):
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 닉네임 입니다.")
-
     decoded_jwt = decode_jwt_token(token = encode_token)
     #verify_client_ip(decoded_jwt,request)
     verify_email(decoded_jwt,user[EMAIL])
     user[PASSWORD] = pwd_context.hash(user[PASSWORD])
     set_datetime(user)
-    _id = await insert_one(db,collection = "users",query = user)
+    _id = await insert_one(db,collection = USERS,query = user)
     return user
 
 @router.get("/userId",status_code = status.HTTP_200_OK,responses = {**response_status_code})
@@ -113,7 +112,7 @@ async def duplicate_userId(user_id,db: Annotated[motor_asyncio.AsyncIOMotorClien
 @router.get("/email",responses = {**response_status_code})
 async def duplicate_email(request:Request,email_str : EmailStr,db: Annotated[motor_asyncio.AsyncIOMotorClient ,Depends(asyncdb)]):
     query = {EMAIL:email_str}
-    current_user = await find_one(db = db,collection = "users",query = query)
+    current_user = await find_one(db = db,collection = USERS,query = query)
     if current_user:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 가입한 이메일 입니다.")
     return JSONResponse(content = {"message" : "사용가능한 이메일입니다"})
@@ -129,7 +128,7 @@ async def validate_token(request:Request,token:str,db: Annotated[motor_asyncio.A
     query = {
         EMAIL :decoded_jwt.get(EMAIL)
     }
-    user = await find_one(db = db,collection = "users",query = query)
+    user = await find_one(db = db,collection = USERS,query = query)
 
     if user:
         HTTPException(status_code = status.HTTP_409_CONFLICT,detail = "이미 존재하는 이메일입니다.")
