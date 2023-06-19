@@ -30,7 +30,7 @@ Nginx 설치 특이사항 :
 Motor library로 비동기로 작성. 최대한 fastAPI 아키텍쳐 특성을 살리기위해서  
 
 
-#### 분산 부하 테스트 
+####  부하 테스트 
 
 Locust : Gunicorn worker 4 로 측정 
 
